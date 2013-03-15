@@ -1,0 +1,16 @@
+int x := 1243.5;
+bool z := true;
+#int y := 0;
+#
+#if(x >= 11 )then
+#	y := 1;
+#else
+#	y := 2;
+#end;
+#
+#while(x <> 14)then
+#	y:= ( y * 2 ) - 8 / 9;
+#end;
+#
+#x <= y + 12;
+#
