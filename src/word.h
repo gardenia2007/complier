@@ -43,6 +43,9 @@
 #define END		37
 #define WHILE	36
 
+#define TRUE	51
+#define FALSE	52
+
 
 
 #endif /* WORD_H_ */

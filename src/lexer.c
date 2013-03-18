@@ -13,7 +13,7 @@ int lexan() {
 		return DONE;
 
 	char ch;
-	int i = 0, flag = 0, lex = 0;
+	int i = 0, flag = 0, lex = 0, p = 0;
 	ch = fgetc(fp);
 	while (ch == ' ' || ch == '\t' || ch == '\n') {
 		if (ch == '\n')
@@ -27,8 +27,6 @@ int lexan() {
 	if (ch == '#') { // comment
 		while (ch != '\n') //skip this line
 			ch = fgetc(fp);
-		//fseek(fp, 1, SEEK_CUR);
-		//ch = fgetc(fp);
 		lineno++;
 		return lexan();
 	}
@@ -41,8 +39,11 @@ int lexan() {
 		}
 		fseek(fp, -1L, SEEK_CUR);
 		token[i] = '\0';
-		//install_id(token);
-		return ID;
+		p = look_up(token);
+		if(p == 0)
+			p = insert(token, ID);
+		tokenval = p;
+		return symtable[p].token;
 	} else if (isdigit(ch)) {
 		token[i++] = ch;
 		ch = fgetc(fp);
@@ -59,6 +60,8 @@ int lexan() {
 		}
 		fseek(fp, -1L, SEEK_CUR);
 		token[i] = '\0';
+		tokenval = atoi(token);
+		//tokenval = 10;
 		return NUM;
 	} else {
 		token[i++] = ch;
@@ -122,6 +125,7 @@ int lexan() {
 			break;
 		}
 		token[i] = '\0';
+		tokenval = NONE;
 		return lex;
 	}
 

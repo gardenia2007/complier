@@ -10,18 +10,37 @@
 
 #include <stdio.h>
 #include <ctype.h>
+#include <stdlib.h>
+#include <string.h>
 #include "word.h"
 
 #define EOS		'\0'
 #define DONE	-1
+#define NONE	-1
+#define STR_MAX	999
+#define SYM_MAX	100
+
+
+struct symentry{
+	char * lexptr;
+	int token;
+};
+
 
 FILE* fp;
 
 char token[128];
+int tokenval;
+struct symentry symtable[SYM_MAX];
 
 int lineno;
 
+
+
 void init_symbol();
+int look_up(char *);
+int insert(char *, int);
+
 void parse();
 int lexan();
 void error_handle(int, char *);

@@ -1,4 +1,4 @@
-int x := 1243.5;
+int x := 12.5;
 bool z := true;
 #int y := 0;
 #
@@ -8,7 +8,7 @@ bool z := true;
 #	y := 2;
 #end;
 #
-#while(x <> 14)then
+while(x <> 14)then
 #	y:= ( y * 2 ) - 8 / 9;
 #end;
 #

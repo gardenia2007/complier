@@ -11,7 +11,7 @@ void parse() {
 	int lex;
 	//lex = lexan();
 	while ((lex = lexan()) != DONE) {
-		printf("<%d,\t'%s'\t>\n", lex, token);
+		printf("<%d,\t'%d'\t>\n", lex, tokenval);
 		//lex = lexan();
 	}
 }
