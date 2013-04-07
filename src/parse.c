@@ -6,6 +6,10 @@
  */
 
 #include "global.h"
+
+#undef STACK_DATA_TYPE
+#define STACK_DATA_TYPE char
+
 #include "stack.h"
 
 void parse() {
@@ -17,12 +21,25 @@ void parse() {
 		push(lex, stack);
 		//lex = lexan();
 	}
-	while(!is_empty(stack)){
-		lex = pop(stack);
-		printf("<\t%d\t>\n", lex);
-	}
 }
 
-void lalr(int lex){
+void lalr_parse(){
+	STACK * stack = init_stack();
+	int state, cur_lex, act;
+	int action[128][128]= {{0}};
+	push(0, stack);
 
+	while(1){
+		state = get_top(stack);
+		act = action[state][cur_lex];
+		if(act < 0){ // shift
+
+		}else if(act > 0){ // reduce
+
+		}else if(act == 0){ // accept
+			printf("accept\n");
+		}else{
+			error_handle(lineno, "Parse error\n");
+		}
+	}
 }

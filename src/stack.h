@@ -10,17 +10,17 @@
 
 #define STACK_SIZE	1024
 
-typedef int elememt_type;
 
 typedef struct stack{
 	int top;
-	elememt_type data[STACK_SIZE];
+	STACK_DATA_TYPE data[STACK_SIZE];
 }STACK;
 
 
 STACK * init_stack();
 bool push(int val, STACK * s);
-elememt_type pop(STACK * s);
+STACK_DATA_TYPE pop(STACK * s);
+STACK_DATA_TYPE get_top(STACK * s);
 bool is_full(STACK * s);
 bool is_empty(STACK * s);
 

@@ -11,9 +11,9 @@ char lexemes[STR_MAX];
 int lastchar = 0;
 int lastentry = 0;
 
-struct symentry keywords[] = {
+symentry keywords[] = {
 		{"if",		IF},
-		{"else",	ELSE},
+		//{"else",	ELSE},
 		{"while",	WHILE},
 
 		{"void",	VOID},
@@ -21,7 +21,7 @@ struct symentry keywords[] = {
 		{"bool",	BOOL},
 		{"float",	FLOAT},
 		{"char",	CHAR},
-		{"string",	STRING},
+		//{"string",	STRING},
 
 		{"main",	MAIN},
 		{"return",	RETURN},
@@ -33,7 +33,7 @@ struct symentry keywords[] = {
 };
 
 void init_symbol() {
-	struct symentry * p;
+	symentry * p;
 	for(p = keywords; p->token; p++)
 		insert(p->lexptr, p->token);
 }

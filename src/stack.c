@@ -25,12 +25,18 @@ bool push(int val, STACK * s){
 	return TRUE;
 }
 
-elememt_type pop(STACK * s){
+STACK_DATA_TYPE pop(STACK * s){
+	STACK_DATA_TYPE tmp = get_top(s);
+	s->top--;
+	return tmp;
+}
+
+STACK_DATA_TYPE get_top(STACK * s){
 	if(is_empty(s)){
 		printf("ERROR:\tEmpty is empty!!\n");
 		return FALSE;
 	}
-	return s->data[s->top--];
+	return s->data[s->top];
 }
 
 bool is_full(STACK * s){

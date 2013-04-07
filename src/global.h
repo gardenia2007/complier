@@ -27,18 +27,24 @@ typedef int bool;
 #define STR_MAX	999
 #define SYM_MAX	100
 
+#define STACK_DATA_TYPE	int
 
-struct symentry{
+
+typedef struct{
 	char * lexptr;
 	int token;
-};
+}symentry;
 
+typedef struct{
+	int lex;
+	int val;
+}lex_s;
 
 FILE* fp;
 
 char token[128];
 int tokenval;
-struct symentry symtable[SYM_MAX];
+symentry symtable[SYM_MAX];
 
 int lex;
 int lineno;
