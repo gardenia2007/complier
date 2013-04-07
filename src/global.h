@@ -14,6 +14,12 @@
 #include <string.h>
 #include "word.h"
 
+typedef int bool;
+
+#define TRUE	1
+#define FALSE	0
+
+
 #define EOS		'\0'
 #define DONE	-1
 #define ERROR	-2

@@ -52,8 +52,8 @@
 #define RETURN	87
 
 
-#define TRUE	51
-#define FALSE	52
+#define TRUE_V	51
+#define FALSE_V	52
 
 #define AND		55
 #define OR		56
