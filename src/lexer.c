@@ -6,6 +6,8 @@
  */
 #include "global.h"
 
+int get_num(int i, int flag);
+
 int state = 0, start = 0;
 
 int lexan() {
@@ -40,39 +42,45 @@ int lexan() {
 		fseek(fp, -1L, SEEK_CUR);
 		token[i] = '\0';
 		p = look_up(token);
-		if(p == 0)
+		if (p == 0)
 			p = insert(token, ID);
 		tokenval = p;
 		return symtable[p].token;
 	} else if (isdigit(ch)) {
 		token[i++] = ch;
-		ch = fgetc(fp);
-		while (isdigit(ch) || ch == '.') {
-			if (ch == '.' && flag == 1) {
-				error_handle(lineno, "unexpected '.' ");
-				ch = fgetc(fp);
-				continue;
-			}
-			if (ch == '.')
-				flag = 1;
-			token[i++] = ch;
-			ch = fgetc(fp);
-		}
-		fseek(fp, -1L, SEEK_CUR);
-		token[i] = '\0';
-		tokenval = atoi(token);
-		//tokenval = 10;
-		return NUM;
+		return get_num(i, flag);
 	} else {
 		token[i++] = ch;
 		switch (ch) {
-		case ':':
+		case '=':
 			ch = fgetc(fp);
 			if (ch == '=') {
 				token[i++] = ch;
-				lex = ASG;
+				lex = EQ;
 			} else {
-				error_handle(lineno, "Missing '='");
+				fseek(fp, -1L, SEEK_CUR);
+				lex = ASG;
+				//error_handle(lineno, "Missing '='");
+			}
+			break;
+		case '|':
+			ch = fgetc(fp);
+			if (ch == '|') {
+				token[i++] = ch;
+				lex = OR;
+			} else {
+				fseek(fp, -1L, SEEK_CUR);
+				error_handle(lineno, "Missing '|'");
+			}
+			break;
+		case '&':
+			ch = fgetc(fp);
+			if (ch == '&') {
+				token[i++] = ch;
+				lex = AND;
+			} else {
+				fseek(fp, -1L, SEEK_CUR);
+				error_handle(lineno, "Missing '&'");
 			}
 			break;
 		case '>':
@@ -96,14 +104,15 @@ int lexan() {
 				lex = LT;
 			}
 			break;
-		case '=':
-			lex = EQ;
-			break;
 		case '+':
 			lex = PLUS;
 			break;
 		case '-':
-			lex = MINUS;
+			if (lex != NUM) { // lex is previous token
+				return get_num(i, flag);
+			}else{
+				lex = MINUS;
+			}
 			break;
 		case '*':
 			lex = MUL;
@@ -123,14 +132,51 @@ int lexan() {
 		case ')':
 			lex = BRACKET_R;
 			break;
+		case '[':
+			lex = BB_L;
+			break;
+		case ']':
+			lex = BB_R;
+			break;
+		case '{':
+			lex = BIGB_R;
+			break;
+		case '}':
+			lex = BIGB_R;
+			break;
+		default:
+			lex = ERROR;
+			error_handle(lineno, "Unkonwn character");
+			break;
 		}
 		token[i] = '\0';
 		tokenval = NONE;
 		return lex;
 	}
 
-	error_handle(lineno, "Unkonwn character");
-
 //	printf("%s", ch);
 	return lexan();
 }
+
+int get_num(int i, int flag)
+{
+	char ch;
+	ch = fgetc(fp);
+	while (isdigit(ch) || ch == '.') {
+		if (ch == '.' && flag == 1) {
+			error_handle(lineno, "unexpected '.' ");
+			ch = fgetc(fp);
+			continue;
+		}
+		if (ch == '.')
+			flag = 1;
+		token[i++] = ch;
+		ch = fgetc(fp);
+	}
+	fseek(fp, -1L, SEEK_CUR);
+	token[i] = '\0';
+	tokenval = atoi(token);
+	//tokenval = 10;
+	return NUM;
+}
+

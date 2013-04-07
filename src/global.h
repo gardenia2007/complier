@@ -16,6 +16,7 @@
 
 #define EOS		'\0'
 #define DONE	-1
+#define ERROR	-2
 #define NONE	-1
 #define STR_MAX	999
 #define SYM_MAX	100
@@ -33,6 +34,7 @@ char token[128];
 int tokenval;
 struct symentry symtable[SYM_MAX];
 
+int lex;
 int lineno;
 
 

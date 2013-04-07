@@ -12,15 +12,23 @@ int lastchar = 0;
 int lastentry = 0;
 
 struct symentry keywords[] = {
-		{"if",	IF},
-		{"then",THEN},
-		{"else",ELSE},
-		{"end",	END},
-		{"while", WHILE},
-		{"int",	INT},
-		{"bool",BOOL},
-		{"true",TRUE},
-		{"false",FALSE},
+		{"if",		IF},
+		{"else",	ELSE},
+		{"while",	WHILE},
+
+		{"void",	VOID},
+		{"int",		INT},
+		{"bool",	BOOL},
+		{"float",	FLOAT},
+		{"char",	CHAR},
+		{"string",	STRING},
+
+		{"main",	MAIN},
+		{"return",	RETURN},
+
+		{"true",	TRUE},
+		{"false",	FALSE},
+
 		{0,		0}
 };
 
