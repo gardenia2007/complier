@@ -23,7 +23,7 @@ int main(void) {
 		return -1;
 	}
 	init();
-	parse();
+	lalr_parse();
 
 	return EXIT_SUCCESS;
 }

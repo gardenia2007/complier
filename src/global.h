@@ -21,7 +21,7 @@ typedef int bool;
 
 
 #define EOS		'\0'
-#define DONE	-1
+#define DONE	0
 #define ERROR	-2
 #define NONE	-1
 #define STR_MAX	999
@@ -55,6 +55,7 @@ void init_symbol();
 int look_up(char *);
 int insert(char *, int);
 
+void lalr_parse();
 void parse();
 int lexan();
 void error_handle(int, char *);

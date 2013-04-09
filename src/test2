@@ -1,0 +1,14 @@
+
+void main ( ) {
+	int x;
+	if ( 10 > x ) {
+		x = -22 + x * 2;
+	};
+}
+int func ( int x ) {
+	int y;
+	while ( 2 + x > 22 ) {
+		y = 23 - x * 3;
+		x = x + 1;
+	};
+}

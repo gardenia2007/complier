@@ -13,7 +13,7 @@ int lastentry = 0;
 
 symentry keywords[] = {
 		{"if",		IF},
-		//{"else",	ELSE},
+		{"else",	ELSE},
 		{"while",	WHILE},
 
 		{"void",	VOID},
@@ -21,7 +21,7 @@ symentry keywords[] = {
 		{"bool",	BOOL},
 		{"float",	FLOAT},
 		{"char",	CHAR},
-		//{"string",	STRING},
+		{"string",	STRING},
 
 		{"main",	MAIN},
 		{"return",	RETURN},

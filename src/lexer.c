@@ -108,11 +108,11 @@ int lexan() {
 			lex = PLUS;
 			break;
 		case '-':
-			if (lex != NUM) { // lex is previous token
-				return get_num(i, flag);
-			}else{
+			//if (lex != NUM) { // lex is previous token
+			//	return get_num(i, flag);
+			//}else{
 				lex = MINUS;
-			}
+			//}
 			break;
 		case '*':
 			lex = MUL;
@@ -139,7 +139,7 @@ int lexan() {
 			lex = BB_R;
 			break;
 		case '{':
-			lex = BIGB_R;
+			lex = BIGB_L;
 			break;
 		case '}':
 			lex = BIGB_R;

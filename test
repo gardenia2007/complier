@@ -1,14 +1,14 @@
-x = -100;
 void main ( ) {
-	int x;
-	if ( 10 > x ) {
-		x = -22 + x * 2;
-	};
+	int id ;
+	if ( num > id ) {
+		id = num + id * num ;
+	} ;
 }
-int func ( int x ) {
-	int y
-	while ( 2 + x > 22 ) {
-		y = 23 - x * 3;
-		x = x + 1;
-	};
+
+int id ( int id ) {
+	int id ;
+	while ( num + id > num ) {
+		id = 12 - id * num ;
+		id = id + num ;
+	} ;
 }

@@ -25,6 +25,10 @@ bool push(int val, STACK * s){
 	return TRUE;
 }
 
+void pop_num(int num, STACK * s){
+	s->top-= num;
+}
+
 STACK_DATA_TYPE pop(STACK * s){
 	STACK_DATA_TYPE tmp = get_top(s);
 	s->top--;
