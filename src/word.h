@@ -8,53 +8,50 @@
 #ifndef WORD_H_
 #define WORD_H_
 
-#define VOID		   1
-#define MAIN		   2
+#define VOID		        1
+#define MAIN		        2
+#define BRACKET_L	        3
+#define BRACKET_R	        4
+#define BIGB_L		        5
+#define BIGB_R		        6
+#define COMMA		        7
+#define ID			        8
+#define INT			        9
+#define CHAR		       10
 
-#define BRACKET_L	   3
-#define BRACKET_R	   4
-#define BIGB_L		   5
-#define BIGB_R		   6
-#define COMMA		   7
+#define BOOL		       11
+#define FLOAT		       12
+#define	STRING		       13
+#define BB_L		       14
+#define BB_R		       15
+#define NUM			       16
+#define UP_COMMA           17
+#define CHAR_SET           18
+#define SEMICOLON	       19
+#define PLUS		       20
 
-#define ID			   8
+#define MINUS		       21
+#define MUL			       22
+#define DIV	  		       23
+#define ASG	  		       24
+#define IF	  		       25
+#define WHILE		       26
+#define ELSE		       27
+#define GT	               28
+#define LT	               29
+#define GE	               30
 
-#define INT			   9
-#define CHAR		   10
-#define BOOL		   11
-#define FLOAT		   12
-#define	STRING		   13
+#define LE	               31
+#define NE	               32
+#define EQ			       33
+#define AND	               34
+#define OR	               35
+#define NOT                36
+#define B_TRUE               37
+#define B_FALSE              38
+#define RETURN	           39
+#define BREAK	           40
 
-#define BB_L		   14
-#define BB_R		   15
-
-#define NUM			   16
-
-#define SEMICOLON	   17
-
-#define PLUS		   18
-#define MINUS		   19
-#define MUL			   20
-#define DIV	  		   21
-#define ASG	  		   22
-
-#define IF	  		   23
-#define WHILE		   24
-#define ELSE		   25
-
-#define GT	           26
-#define LT	           27
-#define GE	           28
-#define LE	           29
-#define NE	           30
-#define EQ			   31
-
-#define OR	           32
-#define AND	           33
-
-#define RETURN	       34
-#define BREAK	       35
-#define CONTINUE	   36
-
+#define CONTINUE	       41
 
 #endif /* WORD_H_ */

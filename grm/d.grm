@@ -1,0 +1,36 @@
+[nonterminal]
+	_start start
+
+	main_func func func_content func_list ret_smt
+
+	param_list param_item d_param_list d_param_item
+
+	t_type ret_type type array
+
+	d_array d_array_list d_array_item
+	
+	declare exp exp_item term factor
+
+	addop mulop relop bolop ch
+
+	smt_list smt call_func loop_list
+
+	bool_exp bool_exp_item
+
+	if_smt if_content var while_smt
+
+	M_t_type M_func_content M_func_content_declare
+
+	M_bool_exp M_quad M_if_smt M_if_smt 
+
+
+[terminal]
+	void main ( ) { } , id int char bool float string [ ] num ' char_set
+	semi
+	+ - * / = 
+	if while else
+	> < >= <= <> ==
+	and or not true false
+	return break continue
+[start]
+	_start

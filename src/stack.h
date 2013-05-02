@@ -18,10 +18,10 @@ typedef struct stack{
 
 
 STACK * init_stack();
-bool push(int val, STACK * s);
+bool push(STACK_DATA_TYPE val, STACK * s);
 STACK_DATA_TYPE pop(STACK * s);
 void pop_num(int num, STACK * s);
-STACK_DATA_TYPE get_top(STACK * s);
+STACK_DATA_TYPE get_top(int offset, STACK * s);
 bool is_full(STACK * s);
 bool is_empty(STACK * s);
 

@@ -1,0 +1,140 @@
+
+
+[production]
+
+
+	_start		 => start ;
+	start	     => main_func func_list ;
+	start	     => main_func ;
+
+	main_func	 => void main ( param_list ) { func_content } ;
+
+	d_param_list	 => d_param_item d_param_list;
+	d_param_list	 => d_param_item ;
+	d_param_list	 => , d_param_list ;
+
+	d_param_item	 => id [ ] ;
+	d_param_item	 => id ;
+	d_param_item	 => num ;
+
+
+	param_list	 => param_item param_list;
+	param_list	 => param_item ;
+	param_list	 => , param_list ;
+
+	param_item	 => t_type M_t_type id [ ] ;
+	param_item	 => t_type M_t_type id ;
+	M_t_type	 => ;
+
+	declare		 => declare semi t_type id ;
+	declare		 => t_type id ;
+	declare		 => d_array ;
+
+	d_array		 => declare = { d_array_list } ;
+	d_array_list => d_array_list , d_array_item ;
+	d_array_list => d_array_item ;
+
+	d_array_item => num ;
+	d_array_item => ch ;
+
+	t_type		 => array ;
+	t_type		 => type ;
+
+	type		 => float ;
+	type		 => bool ;
+	type		 => char ;
+	type		 => int ;
+
+	array		 => type [ num ] ;
+
+	func		 => ret_type id ( ) { func_content } ;
+	func		 => ret_type id ( param_list ) { func_content };
+
+	func_content => M_func_content_declare declare semi smt_list semi ;
+	func_content => smt_list semi ;
+	M_func_content => ;
+	M_func_content_declare => ;
+
+	ret_type	 => type ;
+	ret_type	 => void ;
+
+	ret_smt		 => return num ;
+	ret_smt		 => return id ;
+	ret_smt		 => return ;
+
+	func_list	 => func func_list ;
+	func_list	 => func ;
+
+	addop		 => + ;
+	addop		 => - ;
+
+	mulop		 => / ;
+	mulop		 => * ;
+
+	relop		 => == ;
+	relop		 => <> ;
+	relop		 => <= ;
+	relop		 => >= ;
+	relop		 => < ;
+	relop		 => > ;
+
+	bolop		 => and ;
+	bolop		 => or ;
+	bolop		 => not ;
+
+	ch			 => ' char_set ' ;
+
+	call_func	 => id ( ) ;
+	call_func	 => id ( d_param_list ) ;
+
+	exp 	     => var = exp_item ;
+	exp 	     => var = call_func ;
+	exp 	     => call_func ;
+
+	var			 => id [ exp_item ] ;
+	var			 => id ;
+
+	exp_item     => exp_item addop term ;
+	exp_item     => term ;
+
+	term 		 => term mulop factor ;
+	term 		 => factor ;
+
+	factor		 => num ;
+	factor		 => ch ;
+	factor		 => id ;
+	factor		 => id [ exp_item ] ;
+	factor		 => ( exp_item ) ;
+
+	smt_list	 => smt_list semi smt ;
+	smt_list	 => smt ;
+
+	M_quad		 => ;
+
+	smt			 => exp ;
+	smt			 => ret_smt ;
+	smt			 => break ;
+	smt			 => continue ;
+	smt			 => while_smt ;
+	smt			 => if_smt ;
+
+
+	loop_list	 => loop_list semi M_quad smt ;
+	loop_list	 => smt ;
+
+	while_smt	 => while ( M_quad bool_exp ) { M_quad loop_list semi } ;
+	if_smt		 => if ( bool_exp ) { M_quad loop_list semi } M_if_smt else { M_quad loop_list semi } ;
+	if_smt		 => if ( bool_exp ) { M_quad loop_list semi } ;
+	M_if_smt	 => ;
+
+	bool_exp	 => bool_exp_item and M_bool_exp bool_exp ;
+	bool_exp	 => bool_exp_item or M_bool_exp bool_exp ;
+	bool_exp	 => not bool_exp_item ;
+	bool_exp	 => bool_exp_item ;
+	bool_exp	 => ( bool_exp ) ;
+
+	M_bool_exp	 => ;
+
+	bool_exp_item => exp_item relop exp_item ;
+	bool_exp_item => true ;
+	bool_exp_item => false ;

@@ -23,11 +23,18 @@ symentry keywords[] = {
 		{"char",	CHAR},
 		{"string",	STRING},
 
+		{"break",	BREAK},
+		{"continue",CONTINUE},
+
 		{"main",	MAIN},
 		{"return",	RETURN},
 
-		{"true",	TRUE},
-		{"false",	FALSE},
+		{"true",	B_TRUE},
+		{"false",	B_FALSE},
+
+		{"and",		AND},
+		{"or",		OR},
+		{"not",		NOT},
 
 		{0,		0}
 };

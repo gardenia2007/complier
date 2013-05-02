@@ -27,12 +27,13 @@ typedef int bool;
 #define STR_MAX	999
 #define SYM_MAX	100
 
-#define STACK_DATA_TYPE	int
+#define STACK_DATA_TYPE	item
 
-
+/* 符号表项 */
 typedef struct{
 	char * lexptr;
 	int token;
+	int addr;
 }symentry;
 
 typedef struct{
@@ -40,15 +41,38 @@ typedef struct{
 	int val;
 }lex_s;
 
+// 符号的属性
+typedef struct{
+	int offset;
+	int width;
+
+	int type;
+	int value;
+
+	int true_list;
+	int false_list;
+} attribute ;
+
+// 栈中的一项
+typedef struct{
+	int state;
+	attribute attr;
+}item;
+
 FILE* fp;
 
 char token[128];
 int tokenval;
 symentry symtable[SYM_MAX];
 
-int lex;
-int lineno;
+int lex; // 当前token
+int lineno; // 当前行号
 
+// 全局栈
+STACK * stack;
+
+// 符号表全局偏移
+int offset;
 
 
 void init_symbol();

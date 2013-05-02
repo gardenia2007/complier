@@ -15,7 +15,7 @@ STACK * init_stack(){
 	return stack;
 }
 
-bool push(int val, STACK * s){
+bool push(STACK_DATA_TYPE val, STACK * s){
 	s->top++;
 	if(s->top == STACK_SIZE){
 		printf("ERROR:\tStack is full!!\n");
@@ -30,17 +30,17 @@ void pop_num(int num, STACK * s){
 }
 
 STACK_DATA_TYPE pop(STACK * s){
-	STACK_DATA_TYPE tmp = get_top(s);
+	STACK_DATA_TYPE tmp = get_top(0, s);
 	s->top--;
 	return tmp;
 }
 
-STACK_DATA_TYPE get_top(STACK * s){
+STACK_DATA_TYPE get_top(int offset, STACK * s){
 	if(is_empty(s)){
 		printf("ERROR:\tEmpty is empty!!\n");
-		return FALSE;
+		//return NULL;
 	}
-	return s->data[s->top];
+	return s->data[s->top + offset];
 }
 
 bool is_full(STACK * s){
