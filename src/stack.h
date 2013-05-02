@@ -11,19 +11,44 @@
 #define STACK_SIZE	1024
 
 
+// 符号的属性
+typedef struct{
+	int addr;
+	int offset;
+	int width;
+
+	int type;
+
+	int value;
+	int value_type; // ADDR or IMM
+
+	int true_list;
+	int false_list;
+} attribute ;
+
+// 栈中的一项
+typedef struct{
+	int state;
+	attribute attr;
+}item;
+
+
+#define STACK_DATA_TYPE	item
+
+
 typedef struct stack{
-	int top;
-	STACK_DATA_TYPE data[STACK_SIZE];
+	int t;
+	STACK_DATA_TYPE d[STACK_SIZE];
 }STACK;
 
 
 STACK * init_stack();
-bool push(STACK_DATA_TYPE val, STACK * s);
+int push(STACK_DATA_TYPE val, STACK * s);
 STACK_DATA_TYPE pop(STACK * s);
 void pop_num(int num, STACK * s);
 STACK_DATA_TYPE get_top(int offset, STACK * s);
-bool is_full(STACK * s);
-bool is_empty(STACK * s);
+int is_full(STACK * s);
+int is_empty(STACK * s);
 
 
 #endif /* STACK_H_ */

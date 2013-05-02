@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "word.h"
+#include "stack.h"
 
 typedef int bool;
 
@@ -27,37 +28,21 @@ typedef int bool;
 #define STR_MAX	999
 #define SYM_MAX	100
 
-#define STACK_DATA_TYPE	item
+#define VALUE_ADDR	1
+#define VALUE_IMM	2
+
 
 /* 符号表项 */
 typedef struct{
 	char * lexptr;
 	int token;
-	int addr;
+	int offset;
 }symentry;
 
 typedef struct{
 	int lex;
 	int val;
 }lex_s;
-
-// 符号的属性
-typedef struct{
-	int offset;
-	int width;
-
-	int type;
-	int value;
-
-	int true_list;
-	int false_list;
-} attribute ;
-
-// 栈中的一项
-typedef struct{
-	int state;
-	attribute attr;
-}item;
 
 FILE* fp;
 
@@ -68,16 +53,22 @@ symentry symtable[SYM_MAX];
 int lex; // 当前token
 int lineno; // 当前行号
 
-// 全局栈
-STACK * stack;
 
 // 符号表全局偏移
 int offset;
 
+// 全局栈
+STACK * s;
+
+// 全局临时变量地址分配
+int temp_addr;
+// 分配临时变量
+int new_temp();
 
 void init_symbol();
 int look_up(char *);
 int insert(char *, int);
+void update_offset(int p, int offset);
 
 void lalr_parse();
 void parse();

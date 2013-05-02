@@ -13,6 +13,8 @@
 
 void init(){
 	lineno = 1;
+	temp_addr = 80000;
+	offset = 10000;
 	init_symbol();
 }
 

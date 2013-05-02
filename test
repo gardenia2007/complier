@@ -1,40 +1,7 @@
-void main (int x) {
-	int [4] data = { 1 , 2 , 4 , 3 } ;
-	int i;
-	int j;
-	int temp;
-	i = 0;
-	while(i < 4){
-		while(j < 4){
-			if( data[i] > data[j]){
-				temp = data[j];
-				data[j] = data[i];
-				data[i] = temp;
-			};
-			j = j + 1;
-		};
-		i = i + 1;
-	};
-	if ( num > id and num > num or id > num ) {
-		id = 12;
-	} ;
-	if ( num > id and num > num or id > num ) {
-		if ( id == num ) {
-		id [ num ] = num + ( id [ num + id ] * ( num + id [ id ] ) ) ;
-		} ;
-	} else {
-		while ( id == 8 ) {
-			break ;
-			return num ;
-		} ;
-	} ;
-}
-
-int id ( int id [ ] ) {
-	int id ;
-	id = id ( 13 ) ;
-	while ( num + id > num ) {
-		id = num - id * num ;
-		id = id + num ;
-	} ;
+void main ( int x) {
+	int x;
+	int k;
+	int m;
+	x = k + m * 2;
+	m = x + ( 8 - m ) / ( 4 * k) - 9;
 }

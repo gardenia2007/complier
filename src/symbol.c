@@ -68,6 +68,10 @@ int insert(char * s, int token){
 	return lastentry;
 }
 
+void update_offset(int p, int offset){
+	symtable[p].offset = offset;
+}
+
 /*
 int insert_str(){
 }
