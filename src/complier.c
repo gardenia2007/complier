@@ -15,10 +15,13 @@ void init(){
 	lineno = 1;
 	temp_addr = 80000;
 	offset = 10000;
+	code.quad = 0;
+
 	init_symbol();
 }
 
 int main(void) {
+	int k;
 	fp = fopen("/home/y/workspace/complier/test", "r");
 	if (fp == NULL) {
 		printf("FATAL ERROR: SOURCE FILE OPEN FAILED!\n");
@@ -26,6 +29,10 @@ int main(void) {
 	}
 	init();
 	lalr_parse();
+
+	for(k = 0; k < code.quad; k++){
+		printf("%d:\t%s", k+1, code.data[k]);
+	}
 
 	return EXIT_SUCCESS;
 }

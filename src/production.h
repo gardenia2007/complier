@@ -7,8 +7,10 @@
 
 #ifndef PRODUCTION_H_
 #define PRODUCTION_H_
-
+#include "global.h"
 #include "translate.h"
+#include "stack.h"
+
 
 #define PRODUCTION_LEFT_SIZE 32
 #define PRODUCTION_RIGHT_SIZE 128
@@ -84,8 +86,6 @@ char * production_left[] = {
 };
 
 
-
-
 PRODUCTION production[] = {
 		{0,"_start->start",1,null_f},
 		{0,"_start->start",1,null_f},
@@ -136,12 +136,12 @@ PRODUCTION production[] = {
 		{23,"addop->-",1,addop_minus},
 		{24,"mulop->/",1,mulop_div},
 		{24,"mulop->*",1,mulop_mul},
-		{25,"relop->==",1,null_f},
-		{25,"relop-><>",1,null_f},
-		{25,"relop-><=",1,null_f},
-		{25,"relop->>=",1,null_f},
-		{25,"relop-><",1,null_f},
-		{25,"relop->>",1,null_f},
+		{25,"relop->==",1,relop_EQ},
+		{25,"relop-><>",1,relop_NE},
+		{25,"relop-><=",1,relop_LE},
+		{25,"relop->>=",1,relop_GE},
+		{25,"relop-><",1,relop_LT},
+		{25,"relop->>",1,relop_GT},
 		{26,"bolop->and",1,null_f},
 		{26,"bolop->or",1,null_f},
 		{26,"bolop->not",1,null_f},
@@ -164,28 +164,28 @@ PRODUCTION production[] = {
 		{22,"factor->(exp_item)",3,factor_exp_item},
 		{28,"smt_list->smt_list semi smt",3,null_f},
 		{28,"smt_list->smt",1,null_f},
-		{42,"M_quad->E",0,null_f},
+		{42,"M_quad->E",0,M_quad_E},
 		{29,"smt->exp",1,null_f},
 		{29,"smt->ret_smt",1,null_f},
 		{29,"smt->break",1,null_f},
 		{29,"smt->continue",1,null_f},
 		{29,"smt->while_smt",1,null_f},
-		{29,"smt->if_smt",1,null_f},
-		{31,"loop_list->loop_list semi M_quad smt",4,null_f},
-		{31,"loop_list->smt",1,null_f},
-		{37,"while_smt->while(M_quadbool_exp){M_quadloop_listsemi}",10,null_f},
-		{34,"if_smt->if(bool_exp){M_quadloop_listsemi}M_if_smt else { M_quad loop_list semi }",16,null_f},
-		{34,"if_smt->if ( bool_exp ) { M_quad loop_list semi }",9,null_f},
-		{43,"M_if_smt->E",0,null_f},
-		{32,"bool_exp->bool_exp_item and M_bool_exp bool_exp",4,null_f},
-		{32,"bool_exp->bool_exp_item or M_bool_exp bool_exp",4,null_f},
-		{32,"bool_exp->not bool_exp_item",2,null_f},
-		{32,"bool_exp->bool_exp_item",1,null_f},
-		{32,"bool_exp->(bool_exp)",3,null_f},
-		{41,"M_bool_exp->E",0,null_f},
-		{33,"bool_exp_item->exp_item relop exp_item",3,null_f},
-		{33,"bool_exp_item->true",1,null_f},
-		{33,"bool_exp_item->false",1,null_f},
+		{29,"smt->if_smt",1,smt_if},
+		{31,"loop_list->loop_list semi M_quad smt",4,loop_list},
+		{31,"loop_list->smt",1,loop_list_smt},
+		{37,"while_smt->while(M_quad bool_exp){M_quad loop_list semi}",10,while_smt},
+		{34,"if_smt->if(bool_exp) { M_quad loop_list semi}M_if_smt else { M_quad loop_list semi }",16,if_smt_else},
+		{34,"if_smt->if ( bool_exp ) { M_quad loop_list semi }",9,if_smt},
+		{43,"M_if_smt->E",0,M_if_smt},
+		{32,"bool_exp->bool_exp_item and M_bool_exp bool_exp",4,bool_exp_and},
+		{32,"bool_exp->bool_exp_item or M_bool_exp bool_exp",4,bool_exp_or},
+		{32,"bool_exp->not bool_exp_item",2,bool_exp_not},
+		{32,"bool_exp->bool_exp_item",1,bool_exp_item},
+		{32,"bool_exp->(bool_exp)",3,bool_exp_bracket},
+		{41,"M_bool_exp->E",0,M_bool_exp_E},
+		{33,"bool_exp_item->exp_item relop exp_item",3,bool_exp_relop},
+		{33,"bool_exp_item->true",1,bool_exp_true},
+		{33,"bool_exp_item->false",1,bool_exp_false},
 };
 int action[][42] = {
 		{E,-3,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E},

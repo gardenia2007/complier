@@ -8,6 +8,8 @@
 #ifndef TRANSLATE_H_
 #define TRANSLATE_H_
 
+#include "stack.h"
+
 void M_init();
 
 void test(item *);
@@ -36,7 +38,38 @@ void addop_plus(item *);
 void addop_minus(item *);
 void var_id(item *);
 void exp_var_exp_item(item *);
-//void (item *);
+
+
+void M_quad_E(item *);
+void M_bool_exp_E(item *);
+void bool_exp_or(item *);
+void bool_exp_and(item *);
+void bool_exp_not(item *);
+void bool_exp_bracket(item *); // 括号
+void bool_exp_relop(item *);
+void bool_exp_true(item *);
+void bool_exp_false(item *);
+void bool_exp_item(item *);
+
+
+void relop_EQ(item *);
+void relop_NE(item *);
+void relop_LE(item *);
+void relop_GE(item *);
+void relop_LT(item *);
+void relop_GT(item *);
+
+void M_if_smt(item *);
+void if_smt(item *);
+void if_smt_else(item *);
+void while_smt(item *);
+void loop_list(item *);
+void loop_list_smt(item *);
+
+
+void smt_if(item *);
+void smt_while(item *);
+//void smt_(item *);
 //void (item *);
 //void (item *);
 

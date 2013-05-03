@@ -8,24 +8,125 @@
 #include "global.h"
 #include "translate.h"
 
-void exp_var_exp_item(item *it){
-	printf("%d = %d\n", symtable[s->d[s->t-2].attr.value].offset, s->d[s->t].attr.value);
+
+void smt_if(item *it){
+	it->attr.next_list = s->d[s->t].attr.next_list;
 }
-void var_id(item *it){
+
+void loop_list(item *it) {
+	back_patch(s->d[s->t - 3].attr.next_list, s->d[s->t - 1].attr.quad);
+	it->attr.next_list = s->d[s->t].attr.next_list;
+}
+void loop_list_smt(item *it) {
+	it->attr.next_list = s->d[s->t].attr.next_list;
+}
+void M_if_smt(item *it) {
+	it->attr.next_list = make_list(code.quad);
+	sprintf(code.data[code.quad++], "goto LABEL_%%d\n");
+}
+void if_smt(item *it) {
+	back_patch(s->d[s->t - 6].attr.true_list, s->d[s->t - 3].attr.quad);
+	it->attr.next_list = merge(s->d[s->t - 6].attr.false_list,
+			s->d[s->t - 2].attr.next_list);
+}
+void if_smt_else(item *it) {
+	list_item * t;
+	back_patch(s->d[s->t - 13].attr.true_list, s->d[s->t - 10].attr.quad);
+	back_patch(s->d[s->t - 13].attr.false_list, s->d[s->t - 3].attr.quad);
+
+	t = merge(s->d[s->t - 6].attr.next_list, s->d[s->t - 2].attr.next_list);
+	it->attr.next_list = merge(s->d[s->t - 9].attr.next_list, t);
+}
+void while_smt(item *it) {
+
+}
+
+void relop_EQ(item *it) {
+	it->attr.value = EQ;
+}
+void relop_NE(item *it) {
+	it->attr.value = NE;
+}
+void relop_LE(item *it) {
+	it->attr.value = LE;
+}
+void relop_GE(item *it) {
+	it->attr.value = GE;
+}
+void relop_LT(item *it) {
+	it->attr.value = LT;
+}
+void relop_GT(item *it) {
+	it->attr.value = GT;
+}
+void M_quad_E(item *it) {
+	it->attr.quad = code.quad + 1;
+}
+void M_bool_exp_E(item *it) {
+	it->attr.quad = code.quad + 1;
+}
+void bool_exp_or(item *it) {
+	back_patch(s->d[s->t - 3].attr.false_list, s->d[s->t - 1].attr.quad);
+	it->attr.true_list = merge(s->d[s->t - 3].attr.true_list,
+			s->d[s->t].attr.true_list);
+	it->attr.false_list = s->d[s->t].attr.false_list;
+}
+void bool_exp_and(item *it) {
+	back_patch(s->d[s->t - 3].attr.true_list, s->d[s->t - 1].attr.quad);
+	it->attr.false_list = merge(s->d[s->t - 3].attr.false_list,
+			s->d[s->t].attr.false_list);
+	it->attr.true_list = s->d[s->t].attr.true_list;
+}
+void bool_exp_not(item *it) {
+	it->attr.false_list = s->d[s->t].attr.true_list;
+	it->attr.true_list = s->d[s->t].attr.false_list;
+}
+void bool_exp_bracket(item *it) { // 括号
+	it->attr.false_list = s->d[s->t - 1].attr.false_list;
+	it->attr.true_list = s->d[s->t - 1].attr.true_list;
+}
+void bool_exp_relop(item *it) {
+	char op[6][3] = { ">", "<", ">=", "<=", "<>", "==" };
+	it->attr.true_list = make_list(code.quad);
+	sprintf(code.data[code.quad++], "if [%d] %s [%d] goto LABEL_%%d\n",
+			s->d[s->t - 2].attr.value, op[s->d[s->t - 1].attr.value - GT],
+			s->d[s->t].attr.value);
+
+	it->attr.false_list = make_list(code.quad);
+	sprintf(code.data[code.quad++], "goto LABEL_%%d\n");
+}
+void bool_exp_true(item *it) {
+	it->attr.true_list = make_list(code.quad);
+	sprintf(code.data[code.quad++], "goto LABEL_%%d\n");
+}
+void bool_exp_false(item *it) {
+	it->attr.false_list = make_list(code.quad);
+	sprintf(code.data[code.quad++], "goto LABEL_%%d\n");
+}
+void bool_exp_item(item *it) {
+	it->attr.false_list = s->d[s->t].attr.false_list;
+	it->attr.true_list = s->d[s->t].attr.true_list;
+}
+
+void exp_var_exp_item(item *it) {
+	sprintf(code.data[code.quad++], "%d = %d\n",
+			symtable[s->d[s->t - 2].attr.value].offset, s->d[s->t].attr.value);
+}
+void var_id(item *it) {
 	it->attr.value = s->d[s->t].attr.value;
 }
 
-void mulop_mul(item *i){
+void mulop_mul(item *i) {
 	i->attr.value = MUL;
 }
-void mulop_div(item *i){
+void mulop_div(item *i) {
 	i->attr.value = DIV;
 }
-void addop_plus(item *i){
+void addop_plus(item *i) {
 	i->attr.value = PLUS;
 }
 
-void addop_minus(item *i){
+void addop_minus(item *i) {
 	i->attr.value = MINUS;
 }
 //
@@ -33,91 +134,96 @@ void addop_minus(item *i){
 //	i->attr.value = DIV;
 //}
 
-void term_factor(item *it){
+void term_factor(item *it) {
 	it->attr.value = s->d[s->t].attr.value;
-	it->attr.value_type = s->d[s->t].attr.value_type;;
+	it->attr.value_type = s->d[s->t].attr.value_type;
+	;
 }
-void exp_item_term(item *it){
+void exp_item_term(item *it) {
 	it->attr.value = s->d[s->t].attr.value;
-	it->attr.value_type = s->d[s->t].attr.value_type;;
+	it->attr.value_type = s->d[s->t].attr.value_type;
+	;
 }
-void addop_mulop(item *it){
+void addop_mulop(item *it) {
 	it->attr.value = new_temp();
 
-	switch(s->d[s->t - 1].attr.value){
+	switch (s->d[s->t - 1].attr.value) {
 	case PLUS:
-		printf("%d = %d + %d\n", it->attr.value, s->d[s->t - 2].attr.value, s->d[s->t].attr.value);
+		sprintf(code.data[code.quad++], "%d = %d + %d\n", it->attr.value,
+				s->d[s->t - 2].attr.value, s->d[s->t].attr.value);
 		break;
 	case MINUS:
-		printf("%d = %d - %d\n", it->attr.value, s->d[s->t - 2].attr.value, s->d[s->t].attr.value);
+		sprintf(code.data[code.quad++], "%d = %d - %d\n", it->attr.value,
+				s->d[s->t - 2].attr.value, s->d[s->t].attr.value);
 		break;
 	case MUL:
-		printf("%d = %d * %d\n", it->attr.value, s->d[s->t - 2].attr.value, s->d[s->t].attr.value);
+		sprintf(code.data[code.quad++], "%d = %d * %d\n", it->attr.value,
+				s->d[s->t - 2].attr.value, s->d[s->t].attr.value);
 		break;
 	case DIV:
-		printf("%d = %d / %d\n", it->attr.value, s->d[s->t - 2].attr.value, s->d[s->t].attr.value);
+		sprintf(code.data[code.quad++], "%d = %d / %d\n", it->attr.value,
+				s->d[s->t - 2].attr.value, s->d[s->t].attr.value);
 		break;
-	default:break;
+	default:
+		break;
 	}
 }
-void exp_item_addop(item *it){
+void exp_item_addop(item *it) {
 	addop_mulop(it);
 }
-void term_term_mulop_factor(item *it){
+void term_term_mulop_factor(item *it) {
 	addop_mulop(it);
 }
-void factor_exp_item(item *it){
+void factor_exp_item(item *it) {
 	it->attr.value = s->d[s->t - 1].attr.value;
 	it->attr.value_type = VALUE_ADDR;
 }
-void factor_id(item *it){
+void factor_id(item *it) {
 	it->attr.value = symtable[s->d[s->t].attr.value].offset;
 	it->attr.value_type = VALUE_ADDR;
 }
-void factor_num(item *it){
+void factor_num(item *it) {
 	it->attr.value = s->d[s->t].attr.value;
 	it->attr.value_type = VALUE_IMM;
 }
 
-void M_func_content_declare(item * it){
+void M_func_content_declare(item * it) {
 }
 
-
-void type_int(item * it){
+void type_int(item * it) {
 	it->attr.type = INT;
 	it->attr.width = 4;
 }
-void type_char(item * it){
+void type_char(item * it) {
 	it->attr.type = CHAR;
 	it->attr.width = 1;
 }
 /*
-s->d[s->t].attr.
-*/
-void t_type_type(item * it){
+ s->d[s->t].attr.
+ */
+void t_type_type(item * it) {
 	it->attr.type = s->d[s->t].attr.type;
 	it->attr.width = s->d[s->t].attr.width;
 }
-void declare_id(item * it){
+void declare_id(item * it) {
 	s->d[s->t].attr.offset = offset;
 	update_offset(it->attr.value, offset); // 更新偏移地址
 //	printf("it.val:%d, addr:%d\n", it->attr.value, offset);
 	offset += s->d[s->t - 1].attr.width;
 }
 
-void M_init(){
+void M_init() {
 //	offset = 0;
 }
 
-void test(item * item){
+void test(item * item) {
 	printf("hello, state is %d\n", item->state);
 }
 
 // 无操作的空函数
-void null_f(item * item){
+void null_f(item * item) {
 	//printf("hello, state is %d\n", item->state);
 
 	return;
 }
-
 

@@ -4,9 +4,11 @@
 
 
 	_start		 => start ;
+	// 在规约出任何产生式之前需要先做一些动作，此处需要标志非终结符
 	start	     => main_func func_list ;
 	start	     => main_func ;
 
+	// 缺少无参数的main函数形式
 	main_func	 => void main ( param_list ) { func_content } ;
 
 	d_param_list	 => d_param_item d_param_list;
@@ -29,7 +31,8 @@
 	declare		 => declare semi t_type id ;
 	declare		 => t_type id ;
 	declare		 => d_array ;
-
+	
+	// 数组声明不应该用declare，漏掉了没有初始化的情况
 	d_array		 => declare = { d_array_list } ;
 	d_array_list => d_array_list , d_array_item ;
 	d_array_list => d_array_item ;
@@ -127,6 +130,7 @@
 	if_smt		 => if ( bool_exp ) { M_quad loop_list semi } ;
 	M_if_smt	 => ;
 
+	// 应该使用左递归
 	bool_exp	 => bool_exp_item and M_bool_exp bool_exp ;
 	bool_exp	 => bool_exp_item or M_bool_exp bool_exp ;
 	bool_exp	 => not bool_exp_item ;

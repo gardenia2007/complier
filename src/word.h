@@ -37,13 +37,14 @@
 #define IF	  		       25
 #define WHILE		       26
 #define ELSE		       27
+
 #define GT	               28
 #define LT	               29
 #define GE	               30
-
 #define LE	               31
 #define NE	               32
 #define EQ			       33
+
 #define AND	               34
 #define OR	               35
 #define NOT                36

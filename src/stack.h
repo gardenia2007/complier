@@ -8,6 +8,8 @@
 #ifndef STACK_H_
 #define STACK_H_
 
+#include "global.h"
+
 #define STACK_SIZE	1024
 
 
@@ -19,11 +21,14 @@ typedef struct{
 
 	int type;
 
+	int quad;
+
 	int value;
 	int value_type; // ADDR or IMM
 
-	int true_list;
-	int false_list;
+	list_item * true_list;
+	list_item * false_list;
+	list_item * next_list; // while 使用
 } attribute ;
 
 // 栈中的一项
@@ -41,6 +46,8 @@ typedef struct stack{
 	STACK_DATA_TYPE d[STACK_SIZE];
 }STACK;
 
+// 全局栈
+STACK * s;
 
 STACK * init_stack();
 int push(STACK_DATA_TYPE val, STACK * s);

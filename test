@@ -2,6 +2,9 @@ void main ( int x) {
 	int x;
 	int k;
 	int m;
-	x = k + m * 2;
-	m = x + ( 8 - m ) / ( 4 * k) - 9;
+	if(x == 4 and m <= k){
+		x = k + m * 2;
+	} else {
+		m = x + ( 8 - m ) / ( 4 * k) - 9;
+	} ;
 }
