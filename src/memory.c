@@ -39,12 +39,13 @@ bool exist_item(list_item *list, list_item *p){
 // 合并两个链表
 list_item * merge(list_item *p, list_item *q){
 	list_item * temp, * p_tail;
+	if( p == NULL)
+		return q;
+
 	// 找到p的尾部
-//	temp = p;
 	for(temp = p; temp != NULL; temp = temp->next)
 		p_tail = temp;
-	//p_tail->next = q;
-//	temp = q;
+
 	for(temp = q; temp != NULL; temp = temp->next){
 		if(exist_item(p, temp)) // 如果前面的列表出現過該項，則跳過
 			continue;

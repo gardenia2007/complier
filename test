@@ -3,8 +3,12 @@ void main ( int x) {
 	int k;
 	int m;
 	if(x == 4 and m <= k){
+#	if(m <= k){
 		x = k + m * 2;
-	} else {
+		m = m + 88;
+	} 
+	 else {
 		m = x + ( 8 - m ) / ( 4 * k) - 9;
 	} ;
+	m = m + 1;
 }

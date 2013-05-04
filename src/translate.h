@@ -63,8 +63,8 @@ void M_if_smt(item *);
 void if_smt(item *);
 void if_smt_else(item *);
 void while_smt(item *);
-void loop_list(item *);
-void loop_list_smt(item *);
+void smt_list(item *);
+void smt_list_smt(item *);
 
 
 void smt_if(item *);

@@ -18,8 +18,10 @@ void reset_it(item * it){
 	it->attr.type = 0;
 	it->attr.addr = 0;
 	it->attr.width = 0;
-	it->attr.true_list = 0;
-	it->attr.false_list = 0;
+	it->attr.quad = code.quad + 1; // 回填翻译中标志非终结符的作用
+	it->attr.true_list = NULL;
+	it->attr.false_list = NULL;
+	it->attr.next_list = NULL;
 }
 
 void parse() {

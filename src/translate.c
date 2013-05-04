@@ -13,16 +13,16 @@ void smt_if(item *it){
 	it->attr.next_list = s->d[s->t].attr.next_list;
 }
 
-void loop_list(item *it) {
-	back_patch(s->d[s->t - 3].attr.next_list, s->d[s->t - 1].attr.quad);
+void smt_list(item *it) {
+	back_patch(s->d[s->t - 2].attr.next_list, s->d[s->t - 1].attr.quad);
 	it->attr.next_list = s->d[s->t].attr.next_list;
 }
-void loop_list_smt(item *it) {
+void smt_list_smt(item *it) {
 	it->attr.next_list = s->d[s->t].attr.next_list;
 }
 void M_if_smt(item *it) {
 	it->attr.next_list = make_list(code.quad);
-	sprintf(code.data[code.quad++], "goto LABEL_%%d\n");
+	sprintf(code.data[code.quad++], "jmp LABEL_%%d\n");
 }
 void if_smt(item *it) {
 	back_patch(s->d[s->t - 6].attr.true_list, s->d[s->t - 3].attr.quad);
@@ -88,20 +88,20 @@ void bool_exp_bracket(item *it) { // 括号
 void bool_exp_relop(item *it) {
 	char op[6][3] = { ">", "<", ">=", "<=", "<>", "==" };
 	it->attr.true_list = make_list(code.quad);
-	sprintf(code.data[code.quad++], "if [%d] %s [%d] goto LABEL_%%d\n",
+	sprintf(code.data[code.quad++], "if [%d] %s [%d] jmp LABEL_%%d\n",
 			s->d[s->t - 2].attr.value, op[s->d[s->t - 1].attr.value - GT],
 			s->d[s->t].attr.value);
 
 	it->attr.false_list = make_list(code.quad);
-	sprintf(code.data[code.quad++], "goto LABEL_%%d\n");
+	sprintf(code.data[code.quad++], "jmp LABEL_%%d\n");
 }
 void bool_exp_true(item *it) {
 	it->attr.true_list = make_list(code.quad);
-	sprintf(code.data[code.quad++], "goto LABEL_%%d\n");
+	sprintf(code.data[code.quad++], "jmp LABEL_%%d\n");
 }
 void bool_exp_false(item *it) {
 	it->attr.false_list = make_list(code.quad);
-	sprintf(code.data[code.quad++], "goto LABEL_%%d\n");
+	sprintf(code.data[code.quad++], "jmp LABEL_%%d\n");
 }
 void bool_exp_item(item *it) {
 	it->attr.false_list = s->d[s->t].attr.false_list;

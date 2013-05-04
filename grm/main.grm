@@ -1,14 +1,12 @@
-
-
 [production]
 
 
 	_start		 => start ;
-	// ÔÚ¹æÔ¼³öÈÎºÎ²úÉúÊ½Ö®Ç°ÐèÒªÏÈ×öÒ»Ð©¶¯×÷£¬´Ë´¦ÐèÒª±êÖ¾·ÇÖÕ½á·û
+	// åœ¨è§„çº¦å‡ºä»»ä½•äº§ç”Ÿå¼ä¹‹å‰éœ€è¦å…ˆåšä¸€äº›åŠ¨ä½œï¼Œæ­¤å¤„éœ€è¦æ ‡å¿—éžç»ˆç»“ç¬¦
 	start	     => main_func func_list ;
 	start	     => main_func ;
 
-	// È±ÉÙÎÞ²ÎÊýµÄmainº¯ÊýÐÎÊ½
+	// ç¼ºå°‘æ— å‚æ•°çš„mainå‡½æ•°å½¢å¼
 	main_func	 => void main ( param_list ) { func_content } ;
 
 	d_param_list	 => d_param_item d_param_list;
@@ -32,7 +30,7 @@
 	declare		 => t_type id ;
 	declare		 => d_array ;
 	
-	// Êý×éÉùÃ÷²»Ó¦¸ÃÓÃdeclare£¬Â©µôÁËÃ»ÓÐ³õÊ¼»¯µÄÇé¿ö
+	// æ•°ç»„å£°æ˜Žä¸åº”è¯¥ç”¨declareï¼Œæ¼æŽ‰äº†æ²¡æœ‰åˆå§‹åŒ–çš„æƒ…å†µ
 	d_array		 => declare = { d_array_list } ;
 	d_array_list => d_array_list , d_array_item ;
 	d_array_list => d_array_item ;
@@ -130,7 +128,7 @@
 	if_smt		 => if ( bool_exp ) { M_quad loop_list semi } ;
 	M_if_smt	 => ;
 
-	// Ó¦¸ÃÊ¹ÓÃ×óµÝ¹é
+	// åº”è¯¥ä½¿ç”¨å·¦é€’å½’
 	bool_exp	 => bool_exp_item and M_bool_exp bool_exp ;
 	bool_exp	 => bool_exp_item or M_bool_exp bool_exp ;
 	bool_exp	 => not bool_exp_item ;

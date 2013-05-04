@@ -28,7 +28,7 @@ typedef struct{
 
 	list_item * true_list;
 	list_item * false_list;
-	list_item * next_list; // while 使用
+	list_item * next_list;
 } attribute ;
 
 // 栈中的一项
