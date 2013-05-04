@@ -28,13 +28,16 @@ typedef int bool;
 #define STR_MAX	999
 #define SYM_MAX	100
 
-#define VALUE_ADDR	1
-#define VALUE_IMM	2
+#define VALUE_STACK_ADDR	1 // 栈上分配的变量
+#define VALUE_IMM			2
+#define VALUE_ADDR			3 // 内存中普通的变量
+#define VALUE_TEMP_ADDR		4 // 临时变量.bss
 
 #define NO_LABEL	0
 #define LABEL		123
 
-
+#define MAX_ASM_LINE	1024
+#define MAX_CHAR_PER_ASM_LINE	64
 /* 符号表项 */
 typedef struct{
 	char * lexptr;
@@ -68,9 +71,9 @@ int new_temp();
 
 typedef struct{
 	// 代码标号
-	int label[1024];
+	char label[MAX_ASM_LINE];
 	// 生成的代码
-	char data[1024][64];
+	char data[MAX_ASM_LINE][MAX_CHAR_PER_ASM_LINE];
 	// 当前生成的代码编号，即code数组下标
 	int quad;
 } s_code;

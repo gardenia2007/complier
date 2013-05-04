@@ -23,7 +23,7 @@ void call_func_param(item *it) {
 }
 void param_item_id(item *it) {
 	it->attr.value = symtable[s->d[s->t].attr.value].offset;
-	it->attr.value_type = VALUE_ADDR;
+	it->attr.value_type = VALUE_STACK_ADDR;
 }
 void param_item_num(item *it) {
 	it->attr.value = s->d[s->t].attr.value;
@@ -146,8 +146,31 @@ void bool_exp_item(item *it) {
 }
 
 void exp_var_exp_item(item *it) {
-	sprintf(code.data[code.quad++], "%d = %d\n",
-			symtable[s->d[s->t - 2].attr.value].offset, s->d[s->t].attr.value);
+
+	switch (s->d[s->t].attr.value_type) {
+	case VALUE_STACK_ADDR:
+		sprintf(code.data[code.quad++], "movl $%d, %%edi\n",
+				s->d[s->t].attr.value);
+		sprintf(code.data[code.quad++], "movl temp(,%%edi,4), %%eax\n");
+		sprintf(code.data[code.quad++], "movl %%eax, %d(%%ebp)\n",
+				s->d[s->t].attr.value,
+				symtable[s->d[s->t - 2].attr.value].offset);
+		break;
+	case VALUE_TEMP_ADDR:
+		sprintf(code.data[code.quad++], "movl %d(%%ebp), %%eax\n",
+				s->d[s->t].attr.value);
+		sprintf(code.data[code.quad++], "movl %%eax, %d(%%ebp)\n",
+				s->d[s->t].attr.value,
+				symtable[s->d[s->t - 2].attr.value].offset);
+		break;
+	case VALUE_IMM:
+		sprintf(code.data[code.quad++], "movl $%d, %d(%%ebp)\n",
+				s->d[s->t].attr.value,
+				symtable[s->d[s->t - 2].attr.value].offset);
+		break;
+	default:
+		break;
+	}
 }
 void var_id(item *it) {
 	it->attr.value = s->d[s->t].attr.value;
@@ -182,33 +205,56 @@ void exp_item_term(item *it) {
 	;
 }
 void addop_mulop(item *it) {
-	attribute *r, *op1, *op2;
+	attribute *r, *op1, *op2, *op;
+	char op2_e[16] = { '\0' }; // op2在汇编中的形式
 	r = &it->attr;
+	op = &s->d[s->t - 1].attr;
 	op1 = &s->d[s->t - 2].attr;
 	op2 = &s->d[s->t].attr;
 
 	r->value = new_temp();
-
-	switch (s->d[s->t - 1].attr.value) {
-	case PLUS:
-		sprintf(code.data[code.quad++], "%d = %d + %d\n", r->value,
-				op1->value, op2->value);
+	r->value_type = VALUE_STACK_ADDR;
+	// op1类型
+	switch (op1->value_type) {
+	case VALUE_STACK_ADDR:
+		// 假定所有變量都在棧上
+		sprintf(code.data[code.quad++], "movl %d(%%ebp), %%eax\n", op1->value);
 		break;
-	case MINUS:
-		sprintf(code.data[code.quad++], "%d = %d - %d\n", r->value,
-				op1->value, op2->value);
-		break;
-	case MUL:
-		sprintf(code.data[code.quad++], "%d = %d * %d\n", r->value,
-				op1->value, op2->value);
-		break;
-	case DIV:
-		sprintf(code.data[code.quad++], "%d = %d / %d\n", r->value,
-				op1->value, op2->value);
+	case VALUE_IMM:
+		sprintf(code.data[code.quad++], "movl $%d, %%eax\n", op1->value);
 		break;
 	default:
 		break;
 	}
+	// op2类型
+	switch (op2->value_type) {
+	case VALUE_STACK_ADDR:
+//		// 假定所有變量都在棧上
+		sprintf(op2_e, "%d(%%ebp)", op2->value);
+		break;
+	case VALUE_IMM:
+		sprintf(op2_e, "$%d", op2->value);
+		break;
+	default:
+		break;
+	}
+	switch (op->value) {
+	case PLUS:
+		sprintf(code.data[code.quad++], "addl %s, %%eax\n", op2_e);
+		break;
+	case MINUS:
+		sprintf(code.data[code.quad++], "subl %s, %%eax\n", op2_e);
+		break;
+	case MUL:
+		sprintf(code.data[code.quad++], "mull %s\n", op2_e);
+		break;
+	case DIV:
+		sprintf(code.data[code.quad++], "divl %s\n", op2_e);
+		break;
+	default:
+		break;
+	}
+	sprintf(code.data[code.quad++], "movl %%eax, %d(ebp)\n", r->value);
 }
 void exp_item_addop(item *it) {
 	addop_mulop(it);
@@ -218,11 +264,11 @@ void term_term_mulop_factor(item *it) {
 }
 void factor_exp_item(item *it) {
 	it->attr.value = s->d[s->t - 1].attr.value;
-	it->attr.value_type = VALUE_ADDR;
+	it->attr.value_type = VALUE_STACK_ADDR;
 }
 void factor_id(item *it) {
 	it->attr.value = symtable[s->d[s->t].attr.value].offset;
-	it->attr.value_type = VALUE_ADDR;
+	it->attr.value_type = VALUE_STACK_ADDR;
 }
 void factor_num(item *it) {
 	it->attr.value = s->d[s->t].attr.value;

@@ -13,7 +13,7 @@
 
 void reset_it(item * it){
 	//it->attr.value = 0;
-	it->attr.value_type = VALUE_ADDR;
+	it->attr.value_type = VALUE_STACK_ADDR;
 	it->attr.offset = 0;
 	it->attr.type = 0;
 	it->attr.addr = 0;

@@ -14,7 +14,7 @@
 char header[] = {
 		".section .data\n"
 		".section .bss\n"
-		"\t.comm t, 1024"
+		"\t.comm temp, 1024"
 		".section .text\n"
 		".globl _start"
 		"_start:\n"
@@ -22,8 +22,8 @@ char header[] = {
 
 void init(){
 	lineno = 1;
-	temp_addr = 80000;
-	offset = 10000;
+	temp_addr = 0;
+	offset = 0;
 	code.quad = 0;
 
 	init_symbol();
