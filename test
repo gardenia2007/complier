@@ -2,8 +2,12 @@ void main ( int x) {
 	int x;
 	int k;
 	int m;
+	while(m <= k){
+		k = k * 2 ;
+		x = 3;
+	};
+	p = w(x, k);
 	if(x == 4 and m <= k){
-#	if(m <= k){
 		x = k + m * 2;
 		m = m + 88;
 	} 

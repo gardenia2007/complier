@@ -11,6 +11,15 @@
 #include "global.h"
 #include <stdlib.h>
 
+char header[] = {
+		".section .data\n"
+		".section .bss\n"
+		"\t.comm t, 1024"
+		".section .text\n"
+		".globl _start"
+		"_start:\n"
+		};
+
 void init(){
 	lineno = 1;
 	temp_addr = 80000;
@@ -31,7 +40,9 @@ int main(void) {
 	lalr_parse();
 
 	for(k = 0; k < code.quad; k++){
-		printf("%d:\t%s", k+1, code.data[k]);
+		if(code.label[k] == LABEL) // 输出label
+			printf("LABEL_%d:\n", k + 1);
+		printf("\t%s", code.data[k]);
 	}
 
 	return EXIT_SUCCESS;

@@ -9,6 +9,7 @@
 	// 缺少无参数的main函数形式
 	main_func	 => void main ( param_list ) { func_content } ;
 
+	// 用于函数调用 
 	d_param_list	 => d_param_item d_param_list;
 	d_param_list	 => d_param_item ;
 	d_param_list	 => , d_param_list ;
@@ -17,11 +18,11 @@
 	d_param_item	 => id ;
 	d_param_item	 => num ;
 
-
+	// 用于声明
 	param_list	 => param_item param_list;
 	param_list	 => param_item ;
 	param_list	 => , param_list ;
-
+	
 	param_item	 => t_type M_t_type id [ ] ;
 	param_item	 => t_type M_t_type id ;
 	M_t_type	 => ;

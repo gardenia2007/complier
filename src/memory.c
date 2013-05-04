@@ -63,6 +63,7 @@ void back_patch(list_item *p, int i){
 	list_item * t;
 	for(t = p; t != NULL; t = t->next){
 		sprintf(code.data[t->quad], code.data[t->quad], i);
+		code.label[i-1] = LABEL;
 //		printf("%s\n", code.data[t->quad]);
 		free(t); // 释放空间
 	}

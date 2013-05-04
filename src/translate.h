@@ -67,10 +67,17 @@ void smt_list(item *);
 void smt_list_smt(item *);
 
 
-void smt_if(item *);
+void smt_if_while(item *);
 void smt_while(item *);
 //void smt_(item *);
-//void (item *);
+
+void param_list(item *);
+void param_list_item(item *);
+void param_item_id(item *);
+void param_item_num(item *);
+void param_item_array(item *);
+void call_func(item *);
+void call_func_param(item *);
 //void (item *);
 
 /*

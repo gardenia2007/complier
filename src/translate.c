@@ -8,8 +8,41 @@
 #include "global.h"
 #include "translate.h"
 
-
-void smt_if(item *it){
+// 无参数
+void call_func(item *it) {
+	sprintf(code.data[code.quad++], "call FUNC_%d\n",
+			symtable[s->d[s->t - 2].attr.value].offset);
+}
+void call_func_param(item *it) {
+	int i;
+	for (i = 0; i <= param_queue.tail; i++) {
+		sprintf(code.data[code.quad++], "param %d\n", param_queue.value[i]);
+	}
+	sprintf(code.data[code.quad++], "call FUNC_%d\n",
+			symtable[s->d[s->t - 3].attr.value].offset);
+}
+void param_item_id(item *it) {
+	it->attr.value = symtable[s->d[s->t].attr.value].offset;
+	it->attr.value_type = VALUE_ADDR;
+}
+void param_item_num(item *it) {
+	it->attr.value = s->d[s->t].attr.value;
+	it->attr.value_type = VALUE_IMM;
+}
+void param_item_array(item *it) {
+}
+void param_list(item *it) {
+	param_queue.tail++; // 进队
+	param_queue.value[param_queue.tail] = s->d[s->t - 1].attr.value;
+	param_queue.value_type[param_queue.tail] = s->d[s->t - 1].attr.value_type;
+}
+// 第一个参数
+void param_list_item(item *it) {
+	param_queue.tail = 0; // 清空队列
+	param_queue.value[0] = s->d[s->t].attr.value;
+	param_queue.value_type[0] = s->d[s->t].attr.value_type;
+}
+void smt_if_while(item *it) {
 	it->attr.next_list = s->d[s->t].attr.next_list;
 }
 
@@ -38,7 +71,11 @@ void if_smt_else(item *it) {
 	it->attr.next_list = merge(s->d[s->t - 9].attr.next_list, t);
 }
 void while_smt(item *it) {
-
+	back_patch(s->d[s->t - 6].attr.true_list, s->d[s->t - 3].attr.quad);
+	back_patch(s->d[s->t - 2].attr.next_list, s->d[s->t - 7].attr.quad);
+	it->attr.next_list = s->d[s->t - 6].attr.false_list;
+	sprintf(code.data[code.quad++], "jmp LABEL_%d\n", s->d[s->t - 7].attr.quad);
+	code.label[s->d[s->t - 7].attr.quad - 1] = LABEL;
 }
 
 void relop_EQ(item *it) {
@@ -145,24 +182,29 @@ void exp_item_term(item *it) {
 	;
 }
 void addop_mulop(item *it) {
-	it->attr.value = new_temp();
+	attribute *r, *op1, *op2;
+	r = &it->attr;
+	op1 = &s->d[s->t - 2].attr;
+	op2 = &s->d[s->t].attr;
+
+	r->value = new_temp();
 
 	switch (s->d[s->t - 1].attr.value) {
 	case PLUS:
-		sprintf(code.data[code.quad++], "%d = %d + %d\n", it->attr.value,
-				s->d[s->t - 2].attr.value, s->d[s->t].attr.value);
+		sprintf(code.data[code.quad++], "%d = %d + %d\n", r->value,
+				op1->value, op2->value);
 		break;
 	case MINUS:
-		sprintf(code.data[code.quad++], "%d = %d - %d\n", it->attr.value,
-				s->d[s->t - 2].attr.value, s->d[s->t].attr.value);
+		sprintf(code.data[code.quad++], "%d = %d - %d\n", r->value,
+				op1->value, op2->value);
 		break;
 	case MUL:
-		sprintf(code.data[code.quad++], "%d = %d * %d\n", it->attr.value,
-				s->d[s->t - 2].attr.value, s->d[s->t].attr.value);
+		sprintf(code.data[code.quad++], "%d = %d * %d\n", r->value,
+				op1->value, op2->value);
 		break;
 	case DIV:
-		sprintf(code.data[code.quad++], "%d = %d / %d\n", it->attr.value,
-				s->d[s->t - 2].attr.value, s->d[s->t].attr.value);
+		sprintf(code.data[code.quad++], "%d = %d / %d\n", r->value,
+				op1->value, op2->value);
 		break;
 	default:
 		break;

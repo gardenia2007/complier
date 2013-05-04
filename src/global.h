@@ -32,6 +32,7 @@ typedef int bool;
 #define VALUE_IMM	2
 
 #define NO_LABEL	0
+#define LABEL		123
 
 
 /* 符号表项 */
@@ -86,6 +87,16 @@ list_item * make_list(int i);
 list_item * merge(list_item *p, list_item *q);
 void back_patch(list_item *p, int i);
 
+// 翻译函数参数使用的队列
+typedef struct{
+	int tail;
+	int value_type[32]; // IMM or ADDR
+	int value[32]; // 最多支持32个参数
+	// 暂时不考虑参数的类型，都默认为int
+	int type[32]; // INT or CHAR or FLOAT
+}s_param_queue;
+
+s_param_queue param_queue;
 
 void init_symbol();
 int look_up(char *);
