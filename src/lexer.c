@@ -41,11 +41,12 @@ int lexan() {
 		}
 		fseek(fp, -1L, SEEK_CUR);
 		token[i] = '\0';
-		p = look_up(token);
-		if (p == 0)
-			p = insert(token, ID);
-		tokenval = p;
-		return symtable[p].token;
+//		p = look_up(token);
+//		if (p == 0)
+//			p = insert(token, ID);
+//		tokenval = p;
+//		return symtable[p].token;
+		return if_keyword(token);
 	} else if (isdigit(ch)) {
 		token[i++] = ch;
 		return get_num(i, flag);

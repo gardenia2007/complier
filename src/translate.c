@@ -7,6 +7,10 @@
 #include "symbol.h"
 #include "translate.h"
 
+void M_func_content_declare(item * it) {
+	new_func_item();
+}
+
 // 无参数
 void call_func(item *it) {
 	sprintf(code.data[code.quad++], "call FUNC_%d\n",
@@ -304,9 +308,6 @@ void factor_id(item *it) {
 void factor_num(item *it) {
 	it->attr.value = s->d[s->t].attr.value;
 	it->attr.value_type = VALUE_IMM;
-}
-
-void M_func_content_declare(item * it) {
 }
 
 void type_int(item * it) {

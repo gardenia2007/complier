@@ -44,6 +44,7 @@ void init() {
 	temp_addr = 0;
 	offset = 0;
 	code.quad = 0;
+	cur_func = -1;
 
 	init_symbol();
 }

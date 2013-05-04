@@ -25,8 +25,10 @@ typedef int bool;
 #define DONE	0
 #define ERROR	-2
 #define NONE	-1
-#define STR_MAX	999
-#define SYM_MAX	128
+#define STR_MAX	1204
+#define FUNC_MAX	8  // 最多FUNC_MAX个函数，包括main
+#define	VAR_MAX		16 // 最多VAR_MAX个变量
+#define	VAR_NAME_MAX	16
 
 #define VALUE_STACK_ADDR	1 // 栈上分配的变量
 #define VALUE_IMM			2
