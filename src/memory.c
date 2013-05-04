@@ -4,7 +4,7 @@
  *  Created on: 2013-5-2
  *      Author: y
  */
-#include "global.h"
+#include "translate.h"
 
 // 生成新临时变量地址
 int new_temp(){

@@ -49,6 +49,7 @@
 
 	array		 => type [ num ] ;
 
+	// 缺少标志非终结符 M_func_start
 	func		 => ret_type id ( ) { func_content } ;
 	func		 => ret_type id ( param_list ) { func_content };
 

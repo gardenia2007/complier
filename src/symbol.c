@@ -5,36 +5,38 @@
  *      Author: y
  */
 
-#include "global.h"
+#include "symbol.h"
 
 char lexemes[STR_MAX];
 int lastchar = 0;
 int lastentry = 0;
 
 symentry keywords[] = {
-		{"if",		IF},
-		{"else",	ELSE},
-		{"while",	WHILE},
+		{"if",		IF,		KEYWORD},
+		{"else",	ELSE,	KEYWORD},
+		{"while",	WHILE,	KEYWORD},
 
-		{"void",	VOID},
-		{"int",		INT},
-		{"bool",	BOOL},
-		{"float",	FLOAT},
-		{"char",	CHAR},
-		{"string",	STRING},
+		{"void",	VOID,	KEYWORD},
+		{"int",		INT,	KEYWORD},
+		{"bool",	BOOL,	KEYWORD},
+		{"float",	FLOAT,	KEYWORD},
+		{"char",	CHAR,	KEYWORD},
+		{"string",	STRING,	KEYWORD},
 
-		{"break",	BREAK},
-		{"continue",CONTINUE},
+		{"break",	BREAK,	KEYWORD},
+		{"continue",CONTINUE,KEYWORD},
 
-		{"main",	MAIN},
-		{"return",	RETURN},
+		{"main",	MAIN,	KEYWORD},
+		{"return",	RETURN,	KEYWORD},
 
-		{"true",	B_TRUE},
-		{"false",	B_FALSE},
+		{"true",	B_TRUE,	KEYWORD},
+		{"false",	B_FALSE,KEYWORD},
 
-		{"and",		AND},
-		{"or",		OR},
-		{"not",		NOT},
+		{"and",		AND,	KEYWORD},
+		{"or",		OR,		KEYWORD},
+		{"not",		NOT,	KEYWORD},
+
+		{"print_int",NULL,	FUNCTION},
 
 		{0,		0}
 };
@@ -42,13 +44,13 @@ symentry keywords[] = {
 void init_symbol() {
 	symentry * p;
 	for(p = keywords; p->token; p++)
-		insert(p->lexptr, p->token);
+		insert(p->name, p->token);
 }
 
 int look_up(char * s){
 	int p;
 	for(p = lastentry; p > 0; p--)
-		if(strcmp(s, symtable[p].lexptr) == 0)
+		if(strcmp(s, symtable[p].name) == 0)
 			return p;
 	return 0;
 }
@@ -62,7 +64,7 @@ int insert(char * s, int token){
 		error_handle(lineno, "symbol table full");
 	lastentry += 1;
 	symtable[lastentry].token = token;
-	symtable[lastentry].lexptr = &lexemes[lastchar];
+	symtable[lastentry].name = &lexemes[lastchar];
 	strcpy(&lexemes[lastchar], s);
 	lastchar += ( len + 1 );
 	return lastentry;

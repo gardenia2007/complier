@@ -7,8 +7,41 @@
 
 #ifndef TRANSLATE_H_
 #define TRANSLATE_H_
-
+#include "global.h"
 #include "stack.h"
+
+
+// 全局临时变量地址分配
+int temp_addr;
+// 分配临时变量
+int new_temp();
+
+typedef struct{
+	// 代码标号
+	char label[MAX_ASM_LINE];
+	// 生成的代码
+	char data[MAX_ASM_LINE][MAX_CHAR_PER_ASM_LINE];
+	// 当前生成的代码编号，即code数组下标
+	int quad;
+} s_code;
+s_code code;
+int next_quad();
+
+list_item * make_list(int i);
+list_item * merge(list_item *p, list_item *q);
+void back_patch(list_item *p, int i);
+
+// 翻译函数参数使用的队列
+typedef struct{
+	int tail;
+	int value_type[32]; // IMM or ADDR
+	int value[32]; // 最多支持32个参数
+	// 暂时不考虑参数的类型，都默认为int
+	int type[32]; // INT or CHAR or FLOAT
+}s_param_queue;
+
+s_param_queue param_queue;
+
 
 void M_init();
 
@@ -84,5 +117,8 @@ void call_func_param(item *);
 void (item *);
 
 */
+
+// 库函数
+void lib_print(item *);
 
 #endif /* TRANSLATE_H_ */

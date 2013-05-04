@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "word.h"
-//#include "stack.h"
+//#include "translate.h"
 
 typedef int bool;
 
@@ -26,7 +26,7 @@ typedef int bool;
 #define ERROR	-2
 #define NONE	-1
 #define STR_MAX	999
-#define SYM_MAX	100
+#define SYM_MAX	128
 
 #define VALUE_STACK_ADDR	1 // 栈上分配的变量
 #define VALUE_IMM			2
@@ -38,12 +38,6 @@ typedef int bool;
 
 #define MAX_ASM_LINE	1024
 #define MAX_CHAR_PER_ASM_LINE	64
-/* 符号表项 */
-typedef struct{
-	char * lexptr;
-	int token;
-	int offset;
-}symentry;
 
 typedef struct{
 	int lex;
@@ -54,7 +48,6 @@ FILE* fp;
 
 char token[128];
 int tokenval;
-symentry symtable[SYM_MAX];
 
 int lex; // 当前token
 int lineno; // 当前行号
@@ -64,42 +57,38 @@ int lineno; // 当前行号
 int offset;
 
 
-// 全局临时变量地址分配
-int temp_addr;
-// 分配临时变量
-int new_temp();
-
-typedef struct{
-	// 代码标号
-	char label[MAX_ASM_LINE];
-	// 生成的代码
-	char data[MAX_ASM_LINE][MAX_CHAR_PER_ASM_LINE];
-	// 当前生成的代码编号，即code数组下标
-	int quad;
-} s_code;
-s_code code;
-int next_quad();
-
 // 回填使用的数据结构和函数
 struct s_list_item{
 	int quad;
 	struct s_list_item * next;
 };
 typedef struct s_list_item list_item;
-list_item * make_list(int i);
-list_item * merge(list_item *p, list_item *q);
-void back_patch(list_item *p, int i);
 
-// 翻译函数参数使用的队列
+
+// 符号的属性
 typedef struct{
-	int tail;
-	int value_type[32]; // IMM or ADDR
-	int value[32]; // 最多支持32个参数
-	// 暂时不考虑参数的类型，都默认为int
-	int type[32]; // INT or CHAR or FLOAT
-}s_param_queue;
+	int addr;
+	int offset;
+	int width;
 
-s_param_queue param_queue;
+	int type;
+
+	int quad;
+
+	int value;
+	int value_type; // ADDR or IMM
+
+	list_item * true_list;
+	list_item * false_list;
+	list_item * next_list;
+} attribute ;
+
+// 栈中的一项
+typedef struct{
+	int state;
+	attribute attr;
+}item;
+
 
 void init_symbol();
 int look_up(char *);
@@ -111,5 +100,14 @@ void parse();
 int lexan();
 void error_handle(int, char *);
 
+//
+//typedef struct {
+//	char name[32];
+//	void (*f)(item*); // 处理该库函数调用的函数指针
+//}s_lib_func;
+//
+//s_lib_func lib_func[] = {
+//		{"print", lib_print},
+//};
 
 #endif /* GLOBAL_H_ */

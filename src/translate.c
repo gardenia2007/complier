@@ -4,8 +4,7 @@
  *  Created on: 2013-4-26
  *      Author: y
  */
-
-#include "global.h"
+#include "symbol.h"
 #include "translate.h"
 
 // 无参数
@@ -16,7 +15,7 @@ void call_func(item *it) {
 void call_func_param(item *it) {
 	int i;
 	for (i = 0; i <= param_queue.tail; i++) {
-		sprintf(code.data[code.quad++], "param %d\n", param_queue.value[i]);
+		sprintf(code.data[code.quad++], "push %d\n", param_queue.value[i]);
 	}
 	sprintf(code.data[code.quad++], "call FUNC_%d\n",
 			symtable[s->d[s->t - 3].attr.value].offset);
@@ -345,5 +344,10 @@ void null_f(item * item) {
 	//printf("hello, state is %d\n", item->state);
 
 	return;
+}
+
+
+void lib_print(item *it){
+
 }
 

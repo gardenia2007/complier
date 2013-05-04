@@ -7,35 +7,11 @@
 
 #ifndef STACK_H_
 #define STACK_H_
-
 #include "global.h"
+#include "translate.h"
 
 #define STACK_SIZE	1024
 
-
-// 符号的属性
-typedef struct{
-	int addr;
-	int offset;
-	int width;
-
-	int type;
-
-	int quad;
-
-	int value;
-	int value_type; // ADDR or IMM
-
-	list_item * true_list;
-	list_item * false_list;
-	list_item * next_list;
-} attribute ;
-
-// 栈中的一项
-typedef struct{
-	int state;
-	attribute attr;
-}item;
 
 
 #define STACK_DATA_TYPE	item

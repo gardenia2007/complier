@@ -9,6 +9,7 @@
  */
 
 #include "global.h"
+#include "translate.h"
 #include <stdlib.h>
 
 char header[] = { ""
@@ -19,13 +20,18 @@ char header[] = { ""
 		".section .text\n"
 		".globl _start\n"
 		"_start:\n"
-		"movl %esp, %ebp\n" // 临时
+		"\tnop\n"
+		"\tmovl %esp, %ebp\n" // 临时
+//		"movl $4321, %eax\n"
+//		"call print_int\n"
+		"\n"
 		"" };
 
 char footer[] = { ""
-		"movl $0, %ebx\n"
-		"movl $1, %eax\n"
-		"int $0x80\n"
+		"\n"
+		"\tmovl $0, %ebx\n"
+		"\tmovl $1, %eax\n"
+		"\tint $0x80\n"
 		"\n" };
 
 char lib_echo[] = { ""

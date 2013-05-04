@@ -1,5 +1,12 @@
 void main ( int x) {
 	int x;
+	int k;
 	x = 0;
 	x = x + 1;
+	if(x == 1){
+		k = 2;
+	}else{
+		k = 9;
+	};
+	print(k);
 }
