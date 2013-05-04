@@ -1,18 +1,5 @@
 void main ( int x) {
 	int x;
-	int k;
-	int m;
-	while(m <= k){
-		k = k * 2 ;
-		x = 3;
-	};
-	#p = w(x, k);
-	if(x == 4 and m <= k){
-		x = k + m * 2;
-		m = m + 88;
-	} 
-	 else {
-		m = x + ( 8 - m ) / ( 4 * k) - 9;
-	} ;
-	m = m + 1;
+	x = 0;
+	x = x + 1;
 }

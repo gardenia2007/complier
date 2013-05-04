@@ -55,7 +55,7 @@ void smt_list_smt(item *it) {
 }
 void M_if_smt(item *it) {
 	it->attr.next_list = make_list(code.quad);
-	sprintf(code.data[code.quad++], "jmp LABEL_%%d\n");
+	sprintf(code.data[code.quad++], "jmp L_%%d\n");
 }
 void if_smt(item *it) {
 	back_patch(s->d[s->t - 6].attr.true_list, s->d[s->t - 3].attr.quad);
@@ -74,7 +74,7 @@ void while_smt(item *it) {
 	back_patch(s->d[s->t - 6].attr.true_list, s->d[s->t - 3].attr.quad);
 	back_patch(s->d[s->t - 2].attr.next_list, s->d[s->t - 7].attr.quad);
 	it->attr.next_list = s->d[s->t - 6].attr.false_list;
-	sprintf(code.data[code.quad++], "jmp LABEL_%d\n", s->d[s->t - 7].attr.quad);
+	sprintf(code.data[code.quad++], "jmp L_%d\n", s->d[s->t - 7].attr.quad);
 	code.label[s->d[s->t - 7].attr.quad - 1] = LABEL;
 }
 
@@ -123,22 +123,49 @@ void bool_exp_bracket(item *it) { // 括号
 	it->attr.true_list = s->d[s->t - 1].attr.true_list;
 }
 void bool_exp_relop(item *it) {
-	char op[6][3] = { ">", "<", ">=", "<=", "<>", "==" };
+//	char op[6][3] = { ">", "<", ">=", "<=", "<>", "==" };
+	char relop[6][3] = { "g", "l", "ge", "le", "ne", "e" };
+	attribute *op1, *op2;
+	op1 = &s->d[s->t - 2].attr;
+	op2 = &s->d[s->t].attr;
+
+	switch (op1->value_type) {
+	case VALUE_STACK_ADDR:
+		sprintf(code.data[code.quad++], "movl %d(%%ebp), %%eax\n", op1->value);
+		break;
+	case VALUE_IMM:
+		sprintf(code.data[code.quad++], "movl $%d, %%eax\n", op1->value);
+		break;
+	default:
+		break;
+	}
+
+	// op2类型
+	switch (op2->value_type) {
+	case VALUE_STACK_ADDR:
+		sprintf(code.data[code.quad++], "cmp %d(%%ebp), %%eax\n", op2->value);
+		break;
+	case VALUE_IMM:
+		sprintf(code.data[code.quad++], "cmp $%d, %%eax\n", op2->value);
+		break;
+	default:
+		break;
+	}
+
 	it->attr.true_list = make_list(code.quad);
-	sprintf(code.data[code.quad++], "if [%d] %s [%d] jmp LABEL_%%d\n",
-			s->d[s->t - 2].attr.value, op[s->d[s->t - 1].attr.value - GT],
-			s->d[s->t].attr.value);
+	sprintf(code.data[code.quad++], "j%s L_%%d\n",
+			relop[s->d[s->t - 1].attr.value - GT]);
 
 	it->attr.false_list = make_list(code.quad);
-	sprintf(code.data[code.quad++], "jmp LABEL_%%d\n");
+	sprintf(code.data[code.quad++], "jmp L_%%d\n");
 }
 void bool_exp_true(item *it) {
 	it->attr.true_list = make_list(code.quad);
-	sprintf(code.data[code.quad++], "jmp LABEL_%%d\n");
+	sprintf(code.data[code.quad++], "jmp L_%%d\n");
 }
 void bool_exp_false(item *it) {
 	it->attr.false_list = make_list(code.quad);
-	sprintf(code.data[code.quad++], "jmp LABEL_%%d\n");
+	sprintf(code.data[code.quad++], "jmp L_%%d\n");
 }
 void bool_exp_item(item *it) {
 	it->attr.false_list = s->d[s->t].attr.false_list;
@@ -229,32 +256,37 @@ void addop_mulop(item *it) {
 	// op2类型
 	switch (op2->value_type) {
 	case VALUE_STACK_ADDR:
-//		// 假定所有變量都在棧上
-		sprintf(op2_e, "%d(%%ebp)", op2->value);
+		sprintf(code.data[code.quad++], "movl %d(%%ebp), %%ebx\n", op2->value);
 		break;
 	case VALUE_IMM:
-		sprintf(op2_e, "$%d", op2->value);
+		sprintf(code.data[code.quad++], "movl $%d, %%ebx\n", op2->value);
 		break;
 	default:
 		break;
 	}
 	switch (op->value) {
 	case PLUS:
-		sprintf(code.data[code.quad++], "addl %s, %%eax\n", op2_e);
+//		sprintf(code.data[code.quad++], "addl %s, %%eax\n", op2_e);
+		sprintf(code.data[code.quad++], "addl %%ebx, %%eax\n");
 		break;
 	case MINUS:
-		sprintf(code.data[code.quad++], "subl %s, %%eax\n", op2_e);
+//		sprintf(code.data[code.quad++], "subl %s, %%eax\n", op2_e);
+		sprintf(code.data[code.quad++], "subl %%ebx, %%eax\n");
 		break;
 	case MUL:
-		sprintf(code.data[code.quad++], "mull %s\n", op2_e);
+		sprintf(code.data[code.quad++], "mull %%ebx\n");
 		break;
 	case DIV:
-		sprintf(code.data[code.quad++], "divl %s\n", op2_e);
+//		sprintf(code.data[code.quad++], "divl %s\n", op2_e);
+		sprintf(code.data[code.quad++], "divl %%ebx\n");
 		break;
 	default:
 		break;
 	}
-	sprintf(code.data[code.quad++], "movl %%eax, %d(ebp)\n", r->value);
+	// 结果一定是临时变量
+	sprintf(code.data[code.quad++], "movl $%d, %%edi\n", r->value);
+	sprintf(code.data[code.quad++], "movl %%eax, temp(,%%edi,4)\n");
+//	sprintf(code.data[code.quad++], "movl %%eax, %d(%%ebp)\n", r->value);
 }
 void exp_item_addop(item *it) {
 	addop_mulop(it);
@@ -264,7 +296,7 @@ void term_term_mulop_factor(item *it) {
 }
 void factor_exp_item(item *it) {
 	it->attr.value = s->d[s->t - 1].attr.value;
-	it->attr.value_type = VALUE_STACK_ADDR;
+	it->attr.value_type = s->d[s->t - 1].attr.value_type;
 }
 void factor_id(item *it) {
 	it->attr.value = symtable[s->d[s->t].attr.value].offset;

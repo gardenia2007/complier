@@ -73,7 +73,7 @@ void lalr_parse(){
 
 //			printf("%d\t: %s => %s\n", act, production_left[production[act].left], production[act].right);
 		}else if(act == AC){ // accept
-			printf("accept\n");
+			printf("Accept\n");
 			break;
 		}else{
 			error_handle(lineno, "Parse error");
