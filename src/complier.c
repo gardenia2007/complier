@@ -10,11 +10,12 @@
 
 #include "global.h"
 #include "translate.h"
+//#include "symbol.h"
 #include <stdlib.h>
 
 char header[] = { ""
 		".section .data\n"
-		"\t"
+		"\t\n"
 		".section .bss\n"
 		"\t.comm temp, 1024\n"
 		".section .text\n"
@@ -46,7 +47,7 @@ void init() {
 	code.quad = 0;
 	cur_func = -1;
 
-	init_symbol();
+//	init_symbol();
 }
 
 int main(void) {
@@ -62,8 +63,10 @@ int main(void) {
 		printf("FATAL ERROR: OUTPUT FILE CAN'T WRITE!\n");
 		return -1;
 	}
+
 	init();
 	lalr_parse();
+
 	printf("%s", header);
 	fprintf(asm_fp, "%s", header);
 	for (k = 0; k < code.quad; k++) {

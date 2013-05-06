@@ -12,6 +12,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "word.h"
 //#include "translate.h"
 
@@ -91,11 +92,6 @@ typedef struct{
 	attribute attr;
 }item;
 
-
-void init_symbol();
-int look_up(char *);
-int insert(char *, int);
-void update_offset(int p, int offset);
 
 void lalr_parse();
 void parse();

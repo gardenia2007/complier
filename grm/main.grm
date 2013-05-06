@@ -28,6 +28,10 @@
 	M_t_type	 => ;
 
 	declare		 => declare semi t_type id ;
+	// 同时声明多个相同类型的变量
+	//declare	 => t_type p ;
+	//p			 => p , id ;
+	//p			 => id ;
 	declare		 => t_type id ;
 	declare		 => d_array ;
 	
@@ -49,7 +53,9 @@
 
 	array		 => type [ num ] ;
 
-	// 缺少标志非终结符 M_func_start
+	// 缺少标志非终结符 M_func_xxx
+	//*func		 => ret_type id M_func_start ( ) { func_content } ;
+	//*func		 => ret_type id M_func_start ( param_list ) { func_content };
 	func		 => ret_type id ( ) { func_content } ;
 	func		 => ret_type id ( param_list ) { func_content };
 

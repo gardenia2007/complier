@@ -15,7 +15,7 @@ int lexan() {
 		return DONE;
 
 	char ch;
-	int i = 0, flag = 0, lex = 0, p = 0;
+	int i = 0, flag = 0, lex = 0, p = 0, if_key = 0;
 	ch = fgetc(fp);
 	while (ch == ' ' || ch == '\t' || ch == '\n') {
 		if (ch == '\n')
@@ -41,12 +41,12 @@ int lexan() {
 		}
 		fseek(fp, -1L, SEEK_CUR);
 		token[i] = '\0';
-//		p = look_up(token);
-//		if (p == 0)
-//			p = insert(token, ID);
-//		tokenval = p;
-//		return symtable[p].token;
-		return if_keyword(token);
+		if_key = if_keyword(token);
+		tokenval = 0;
+		if(if_key == ID || if_key == MAIN) // main特殊处理，需要当成函数名
+			// 名字存起来,如果之前存过了也再次存储，因为可能作用域不同
+			tokenval = insert_id_name(token);
+		return if_key;
 	} else if (isdigit(ch)) {
 		token[i++] = ch;
 		return get_num(i, flag);

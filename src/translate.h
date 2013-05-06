@@ -9,6 +9,7 @@
 #define TRANSLATE_H_
 #include "global.h"
 #include "stack.h"
+#include "symbol.h"
 
 
 // 全局临时变量地址分配
@@ -48,7 +49,6 @@ void M_init();
 void test(item *);
 void null_f(item *);
 
-void M_func_content_declare(item *);
 
 void type_int(item *);
 void type_char(item *);
@@ -104,15 +104,24 @@ void smt_if_while(item *);
 void smt_while(item *);
 //void smt_(item *);
 
-void param_list(item *);
-void param_list_item(item *);
-void param_item_id(item *);
-void param_item_num(item *);
-void param_item_array(item *);
+// 函数参数调用
+void d_param_list(item *);
+void d_param_list_item(item *);
+void d_param_item_id(item *);
+void d_param_item_num(item *);
+void d_param_item_array(item *);
 void call_func(item *);
 void call_func_param(item *);
 //void (item *);
 
+
+void M_func_start(item *);
+void M_func_content_declare(item *);
+// 函数参数声明
+void param_list(item *);
+void param_list_item(item *);
+void param_item_id(item *);
+void param_item_array(item *);
 /*
 void (item *);
 

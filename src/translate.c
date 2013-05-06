@@ -4,43 +4,99 @@
  *  Created on: 2013-4-26
  *      Author: y
  */
-#include "symbol.h"
 #include "translate.h"
 
+// 函数定义开始
+void M_func_start(item * it) {
+	new_func_item(); // 在函数符号表中新创建一项
+	// 拷贝名字
+	//	strcpy(s_t[cur_func].name, id_names + s->d[s->t].attr.value);
+	s_t[cur_func].name = id_names + s->d[s->t - 4].attr.value;
+	// TODO 保存返回值类型
+	//
+}
+// 第一个参数
+void param_list_item(item *it) {
+	// 放入局部变量的符号表中
+	variable_item *t = &s_t[cur_func].p[s_t[cur_func].last_p];
+	t->type = s->d[s->t].attr.type;
+	t->name = &id_names[s->d[s->t].attr.value];
+	t->offset = s->d[s->t].attr.offset;
+
+	s_t[cur_func].last_p++;
+}
+void param_list(item *it) {
+	// 操作是一样的
+	param_list_item(it);
+}
+void param_item_id(item *it) {
+	it->attr.value = s->d[s->t].attr.value; // id名字在id_names的起始位置
+
+	it->attr.type = s->d[s->t - 2].attr.type;
+	it->attr.offset = s_t[cur_func].p_offset; // 参数用
+	// !必须放在这里
+	s_t[cur_func].p_offset += s->d[s->t - 2].attr.width; // update offset
+}
+void param_item_array(item *it) {
+	// TODO
+}
+// 函数内部变量声明
 void M_func_content_declare(item * it) {
-	new_func_item();
+	M_func_start(it);
 }
 
-// 无参数
+// 无参数调用
 void call_func(item *it) {
-	sprintf(code.data[code.quad++], "call FUNC_%d\n",
-			symtable[s->d[s->t - 2].attr.value].offset);
+	int func = look_up_func(&id_names[s->d[s->t - 2].attr.value]);
+	sprintf(code.data[code.quad++], "call FUNC_%s\n", s_t[func].name);
 }
 void call_func_param(item *it) {
 	int i;
-	for (i = 0; i <= param_queue.tail; i++) {
-		sprintf(code.data[code.quad++], "push %d\n", param_queue.value[i]);
+	int func = look_up_func(&id_names[s->d[s->t - 3].attr.value]);
+	if (param_queue.tail != s_t[func].last_p) {
+		error_handle(lineno, "mimatch function parameters!");
 	}
-	sprintf(code.data[code.quad++], "call FUNC_%d\n",
-			symtable[s->d[s->t - 3].attr.value].offset);
+	for (i = 0; i <= param_queue.tail; i++) {
+		switch (param_queue.value_type[i]) {
+		case VALUE_ADDR:
+			sprintf(code.data[code.quad++], "push %d\n", param_queue.value[i]);
+			break;
+		case VALUE_TEMP_ADDR:
+			sprintf(code.data[code.quad++], "movl $%d, %%edi\n",
+					param_queue.value[i]);
+			sprintf(code.data[code.quad++], "push temp(,%%edi,4)\n");
+			break;
+		case VALUE_STACK_ADDR:
+			sprintf(code.data[code.quad++], "push %d(%%ebp)\n",
+					param_queue.value[i]);
+			break;
+		case VALUE_IMM:
+			sprintf(code.data[code.quad++], "push $%d\n", param_queue.value[i]);
+			break;
+		}
+	}
+	// 调用
+	sprintf(code.data[code.quad++], "call FUNC_%s\n", s_t[func].name);
+	// 清理栈上的参数
+	sprintf(code.data[code.quad++], "addl $%d, %%esp\n", s_t[func].p_offset);
 }
-void param_item_id(item *it) {
-	it->attr.value = symtable[s->d[s->t].attr.value].offset;
+void d_param_item_id(item *it) {
+	it->attr.value = s_t[cur_func].v[s->d[s->t].attr.value].offset;
 	it->attr.value_type = VALUE_STACK_ADDR;
 }
-void param_item_num(item *it) {
+void d_param_item_num(item *it) {
 	it->attr.value = s->d[s->t].attr.value;
 	it->attr.value_type = VALUE_IMM;
 }
-void param_item_array(item *it) {
+void d_param_item_array(item *it) {
 }
-void param_list(item *it) {
+void d_param_list(item *it) {
 	param_queue.tail++; // 进队
 	param_queue.value[param_queue.tail] = s->d[s->t - 1].attr.value;
 	param_queue.value_type[param_queue.tail] = s->d[s->t - 1].attr.value_type;
 }
 // 第一个参数
-void param_list_item(item *it) {
+void d_param_list_item(item *it) {
 	param_queue.tail = 0; // 清空队列
 	param_queue.value[0] = s->d[s->t].attr.value;
 	param_queue.value_type[0] = s->d[s->t].attr.value_type;
@@ -178,25 +234,22 @@ void bool_exp_item(item *it) {
 void exp_var_exp_item(item *it) {
 
 	switch (s->d[s->t].attr.value_type) {
-	case VALUE_STACK_ADDR:
+	case VALUE_TEMP_ADDR:
 		sprintf(code.data[code.quad++], "movl $%d, %%edi\n",
 				s->d[s->t].attr.value);
 		sprintf(code.data[code.quad++], "movl temp(,%%edi,4), %%eax\n");
 		sprintf(code.data[code.quad++], "movl %%eax, %d(%%ebp)\n",
-				s->d[s->t].attr.value,
-				symtable[s->d[s->t - 2].attr.value].offset);
+				s->d[s->t - 2].attr.value);
 		break;
-	case VALUE_TEMP_ADDR:
+	case VALUE_STACK_ADDR:
 		sprintf(code.data[code.quad++], "movl %d(%%ebp), %%eax\n",
 				s->d[s->t].attr.value);
 		sprintf(code.data[code.quad++], "movl %%eax, %d(%%ebp)\n",
-				s->d[s->t].attr.value,
-				symtable[s->d[s->t - 2].attr.value].offset);
+				s->d[s->t - 2].attr.value);
 		break;
 	case VALUE_IMM:
 		sprintf(code.data[code.quad++], "movl $%d, %d(%%ebp)\n",
-				s->d[s->t].attr.value,
-				symtable[s->d[s->t - 2].attr.value].offset);
+				s->d[s->t].attr.value, s->d[s->t - 2].attr.value);
 		break;
 	default:
 		break;
@@ -227,12 +280,10 @@ void addop_minus(item *i) {
 void term_factor(item *it) {
 	it->attr.value = s->d[s->t].attr.value;
 	it->attr.value_type = s->d[s->t].attr.value_type;
-	;
 }
 void exp_item_term(item *it) {
 	it->attr.value = s->d[s->t].attr.value;
 	it->attr.value_type = s->d[s->t].attr.value_type;
-	;
 }
 void addop_mulop(item *it) {
 	attribute *r, *op1, *op2, *op;
@@ -302,7 +353,13 @@ void factor_exp_item(item *it) {
 	it->attr.value_type = s->d[s->t - 1].attr.value_type;
 }
 void factor_id(item *it) {
-	it->attr.value = symtable[s->d[s->t].attr.value].offset;
+//	int offset = look_up(s->d[s->t].attr.value);
+	int o = look_up(&id_names[s->d[s->t].attr.value], cur_func);
+	if (o > MAGIC_NUM) { // 局部变量
+		it->attr.value = s_t[cur_func].v[o - MAGIC_NUM].offset; // -8(%ebp)
+	} else { // 参数
+		it->attr.value = s_t[cur_func].p[o].offset;
+	}
 	it->attr.value_type = VALUE_STACK_ADDR;
 }
 void factor_num(item *it) {
@@ -316,7 +373,7 @@ void type_int(item * it) {
 }
 void type_char(item * it) {
 	it->attr.type = CHAR;
-	it->attr.width = 1;
+	it->attr.width = 4;
 }
 /*
  s->d[s->t].attr.
@@ -326,10 +383,14 @@ void t_type_type(item * it) {
 	it->attr.width = s->d[s->t].attr.width;
 }
 void declare_id(item * it) {
-	s->d[s->t].attr.offset = offset;
-	update_offset(it->attr.value, offset); // 更新偏移地址
-//	printf("it.val:%d, addr:%d\n", it->attr.value, offset);
-	offset += s->d[s->t - 1].attr.width;
+
+	variable_item *t = &s_t[cur_func].v[s_t[cur_func].last_v];
+	t->type = s->d[s->t - 1].attr.type;
+	t->name = &id_names[s->d[s->t].attr.value];
+	t->offset = s_t[cur_func].v_offset; // 栈中分配的变量
+
+	s_t[cur_func].v_offset -= s->d[s->t - 1].attr.width; // update offset
+	s_t[cur_func].last_v++;
 }
 
 void M_init() {
@@ -347,8 +408,7 @@ void null_f(item * item) {
 	return;
 }
 
-
-void lib_print(item *it){
+void lib_print(item *it) {
 
 }
 

@@ -1,4 +1,4 @@
-void main ( int x) {
+void main ( int p) {
 	int x;
 	int k;
 	x = 0;

@@ -55,7 +55,7 @@ void lalr_parse(){
 			break;
 		}else if(act < 0){ // shift
 			it.state = -act;
-			it.attr.value = tokenval; // 符号表项id
+			it.attr.value = tokenval; // 符号表项id等
 			push(it, s);
 			cur_lex = lexan();
 			lex = cur_lex;
