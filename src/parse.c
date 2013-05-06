@@ -10,6 +10,7 @@
 
 
 #include "stack.h"
+#include "action_goto.h"
 
 void reset_it(item * it){
 	it->attr.value_type = VALUE_STACK_ADDR;

@@ -1,13 +1,14 @@
+
 [production]
 
 
 	_start		 => start ;
 	// 在规约出任何产生式之前需要先做一些动作，此处需要标志非终结符
-	// main函数当作普通函数处理
-	start	     => main_func func_list ;
-	start	     => main_func ;
+	// ***main函数当作普通函数处理
+	start	     => func func_list ;
+	start	     => func ;//
 
-	// 缺少无参数的main函数形式
+	// 缺少无参数的main函数形式,
 	main_func	 => void main ( param_list ) { func_content } ;
 
 	// 用于函数调用 
@@ -30,14 +31,11 @@
 
 	declare		 => declare semi t_type id ;
 	// 同时声明多个相同类型的变量
-	//declare	 => t_type p ;
-	//p			 => p , id ;
-	//p			 => id ;
-	declare		 => t_type id ;
+	declare	 	 => t_type declare_more_id ;
 	declare		 => d_array ;
 	
 	// 数组声明不应该用declare，漏掉了没有初始化的情况
-	d_array		 => declare = { d_array_list } ;
+	d_array		 => t_type id [ ] = { d_array_list } ;
 	d_array_list => d_array_list , d_array_item ;
 	d_array_list => d_array_item ;
 
@@ -52,17 +50,15 @@
 	type		 => char ;
 	type		 => int ;
 
-	array		 => type [ num ] ;
+	array		 => type ] num ] ;
 
 	// 缺少标志非终结符 M_func_xxx
-	//*func		 => ret_type id M_func_start ( ) { func_content } ;
-	//*func		 => ret_type id M_func_start ( param_list ) { func_content };
-	func		 => ret_type id ( ) { func_content } ;
-	func		 => ret_type id ( param_list ) { func_content };
+	func		 => ret_type id M_func_start ( ) { func_content } ;
+	func		 => ret_type id M_func_start ( param_list ) { func_content };
 
 	func_content => M_func_content_declare declare semi smt_list semi ;
 	func_content => smt_list semi ;
-	M_func_content => ;
+	M_func_start => ;
 	M_func_content_declare => ;
 
 	ret_type	 => type ;
@@ -149,3 +145,17 @@
 	bool_exp_item => exp_item relop exp_item ;
 	bool_exp_item => true ;
 	bool_exp_item => false ;
+
+	// 无初始值的数组声明	
+	d_array			 => t_type id [ num ] ;
+	d_array		 	 => t_type id [ num ] = { d_array_list } ;
+	
+	declare		 => declare semi d_array ;
+	
+	M_start			 => ;
+//	M_end			 => ;
+	declare_more_id	 => id , declare_more_id;
+	declare_more_id	 => id ;
+
+
+

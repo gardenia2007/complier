@@ -1,4 +1,4 @@
-void main ( int p) {
+void main () {
 	int x;
 	int k;
 	x = 0;
@@ -17,4 +17,11 @@ void main ( int p) {
 	print_int(x);
 	print_br();
 	exit(1);
+}
+
+int xxy(){
+	int p, z;
+	p = 0;
+	z = 0;
+	print_int(z);
 }

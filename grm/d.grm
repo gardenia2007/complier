@@ -19,9 +19,11 @@
 
 	if_smt if_content var while_smt
 
-	M_t_type M_func_content M_func_content_declare
+	M_t_type M_func_start M_func_content_declare
 
 	M_bool_exp M_quad M_if_smt M_if_smt 
+	
+	M_start M_end declare_more_id
 
 
 [terminal]

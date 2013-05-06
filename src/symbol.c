@@ -24,7 +24,7 @@ keyword keywords[] = {
 		{"break",	BREAK },
 		{"continue",CONTINUE },
 
-		{"main",	MAIN },
+//		{"main",	MAIN },
 		{"return",	RETURN },
 
 		{"true",	B_TRUE },
