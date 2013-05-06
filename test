@@ -1,27 +1,18 @@
-void main () {
-	int x;
-	int k;
-	x = 0;
-	k = 1;
-	##print_int(k);
-	while(x < 5){
-		x = x + 1;
-		k = k * x;
-#		if(k > 100){
-			print_int(k);
-#		}else{
-			print_int(1234);
-#		};
-		print_br();
-	};
-	print_int(x);
+
+int xxy(int w,int k){
+# TODO 程序結果錯誤
+	w = w + k;
+	print_int(w);
 	print_br();
-	exit(1);
+	print_int(k);
+	
 }
 
-int xxy(){
-	int p, z;
-	p = 0;
-	z = 0;
-	print_int(z);
+
+void main () {
+	int k;
+	k = 1;
+	xxy(k,123);
+	print_br();
+	exit(1);
 }

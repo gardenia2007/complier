@@ -117,6 +117,8 @@ void call_func_param(item *);
 
 void M_func_start(item *);
 void M_func_content_declare(item *);
+void func(item *);
+void func_param(item *);
 // 函数参数声明
 void param_list(item *);
 void param_list_item(item *);

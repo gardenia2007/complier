@@ -6,14 +6,44 @@
  */
 #include "translate.h"
 
+void func(item *it) {
+	// 回填局部變量所佔空間
+	sprintf(code.data[s->d[s->t - 5].attr.value],
+			code.data[s->d[s->t - 5].attr.value],
+			- ( s_t[cur_func].v_offset + 4));
+	sprintf(code.data[code.quad++], "addl $%d, %%esp\n",
+			- ( s_t[cur_func].v_offset + 4));
+	sprintf(code.data[code.quad++], "popl %%ebp\n");
+	sprintf(code.data[code.quad++], "ret\n");
+}
+void func_param(item *it) {
+	// 回填局部變量所佔空間
+	sprintf(code.data[s->d[s->t - 6].attr.value],
+			code.data[s->d[s->t - 6].attr.value],
+			- ( s_t[cur_func].v_offset + 4));
+	sprintf(code.data[code.quad++], "addl $%d, %%esp\n",
+			- ( s_t[cur_func].v_offset + 4));
+	sprintf(code.data[code.quad++], "popl %%ebp\n");
+	sprintf(code.data[code.quad++], "ret\n");
+}
 // 函数定义开始
 void M_func_start(item * it) {
+	char main[] = "main";
 	new_func_item(); // 在函数符号表中新创建一项
 	// 拷贝名字
 	//	strcpy(s_t[cur_func].name, id_names + s->d[s->t].attr.value);
-	s_t[cur_func].name = id_names + s->d[s->t - 4].attr.value;
+	s_t[cur_func].name = id_names + s->d[s->t].attr.value;
 	// TODO 保存返回值类型
 	//
+	if(strcmp(s_t[cur_func].name, main) == 0) // 如果是主函數
+		sprintf(code.data[code.quad++], "_start:\n\tpushl %%ebp\n", s_t[cur_func].name);
+	else
+		sprintf(code.data[code.quad++], "FUNC_%s:\n\tpushl %%ebp\n", s_t[cur_func].name);
+
+	sprintf(code.data[code.quad++], "movl %%esp, %%ebp\n");
+	// 局部变量所占空间,等函数归约出来后回填
+	it->attr.value = code.quad;
+	sprintf(code.data[code.quad++], "subl $%%d, %%%%esp\n");
 }
 // 第一个参数
 void param_list_item(item *it) {
@@ -42,7 +72,7 @@ void param_item_array(item *it) {
 }
 // 函数内部变量声明
 void M_func_content_declare(item * it) {
-	M_func_start(it);
+//	M_func_start(it);
 }
 
 // 无参数调用
@@ -53,7 +83,7 @@ void call_func(item *it) {
 void call_func_param(item *it) {
 	int i;
 	int func = look_up_func(&id_names[s->d[s->t - 3].attr.value]);
-	if (param_queue.tail + 1!= s_t[func].last_p) {
+	if (param_queue.tail + 1 != s_t[func].last_p) {
 		error_handle(lineno, "mismatch function parameters!");
 	}
 	for (i = 0; i <= param_queue.tail; i++) {
@@ -71,14 +101,15 @@ void call_func_param(item *it) {
 					param_queue.value[i]);
 			break;
 		case VALUE_IMM:
-			sprintf(code.data[code.quad++], "pushl $%d\n", param_queue.value[i]);
+			sprintf(code.data[code.quad++], "pushl $%d\n",
+					param_queue.value[i]);
 			break;
 		}
 	}
 	// 调用
 	sprintf(code.data[code.quad++], "call FUNC_%s\n", s_t[func].name);
 	// 清理栈上的参数
-	sprintf(code.data[code.quad++], "addl $%d, %%esp\n", s_t[func].p_offset);
+	sprintf(code.data[code.quad++], "addl $%d, %%esp\n", s_t[func].p_offset - 8);
 }
 void d_param_item_id(item *it) {
 	factor_id(it);

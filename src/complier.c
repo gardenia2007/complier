@@ -20,13 +20,7 @@ char header[] = { ""
 		"\t.comm temp, 1024\n"
 		".section .text\n"
 		".globl _start\n"
-		"_start:\n"
 		"\tnop\n"
-		"\tpushl %ebp\n"
-		"\tmovl %esp, %ebp\n" // 临时
-		"\tsubl $16, %esp\n"
-//		"movl $4321, %eax\n"
-//		"call print_int\n"
 		"\n"
 		"" };
 

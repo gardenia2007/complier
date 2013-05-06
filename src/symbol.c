@@ -57,7 +57,7 @@ void insert_lib_func(){
 		new_func_item();
 		s_t[cur_func].name = lib_func[i].name;
 		s_t[cur_func].last_p = lib_func[i].p_cnt;
-		s_t[cur_func].p_offset = lib_func[i].p_space;
+		s_t[cur_func].p_offset = lib_func[i].p_space + 8;
 		s_t[cur_func].ret_type = lib_func[i].ret_type;
 	}
 }

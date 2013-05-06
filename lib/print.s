@@ -49,5 +49,6 @@ L_loop:
 	movl digits, %edx
 	int $0x80
 
+
 	ret
 
