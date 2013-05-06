@@ -53,25 +53,25 @@ void call_func(item *it) {
 void call_func_param(item *it) {
 	int i;
 	int func = look_up_func(&id_names[s->d[s->t - 3].attr.value]);
-	if (param_queue.tail != s_t[func].last_p) {
-		error_handle(lineno, "mimatch function parameters!");
+	if (param_queue.tail + 1!= s_t[func].last_p) {
+		error_handle(lineno, "mismatch function parameters!");
 	}
 	for (i = 0; i <= param_queue.tail; i++) {
 		switch (param_queue.value_type[i]) {
 		case VALUE_ADDR:
-			sprintf(code.data[code.quad++], "push %d\n", param_queue.value[i]);
+			sprintf(code.data[code.quad++], "pushl %d\n", param_queue.value[i]);
 			break;
 		case VALUE_TEMP_ADDR:
 			sprintf(code.data[code.quad++], "movl $%d, %%edi\n",
 					param_queue.value[i]);
-			sprintf(code.data[code.quad++], "push temp(,%%edi,4)\n");
+			sprintf(code.data[code.quad++], "pushl temp(,%%edi,4)\n");
 			break;
 		case VALUE_STACK_ADDR:
-			sprintf(code.data[code.quad++], "push %d(%%ebp)\n",
+			sprintf(code.data[code.quad++], "pushl %d(%%ebp)\n",
 					param_queue.value[i]);
 			break;
 		case VALUE_IMM:
-			sprintf(code.data[code.quad++], "push $%d\n", param_queue.value[i]);
+			sprintf(code.data[code.quad++], "pushl $%d\n", param_queue.value[i]);
 			break;
 		}
 	}
@@ -81,8 +81,7 @@ void call_func_param(item *it) {
 	sprintf(code.data[code.quad++], "addl $%d, %%esp\n", s_t[func].p_offset);
 }
 void d_param_item_id(item *it) {
-	it->attr.value = s_t[cur_func].v[s->d[s->t].attr.value].offset;
-	it->attr.value_type = VALUE_STACK_ADDR;
+	factor_id(it);
 }
 void d_param_item_num(item *it) {
 	it->attr.value = s->d[s->t].attr.value;
@@ -182,7 +181,6 @@ void bool_exp_bracket(item *it) { // 括号
 	it->attr.true_list = s->d[s->t - 1].attr.true_list;
 }
 void bool_exp_relop(item *it) {
-//	char op[6][3] = { ">", "<", ">=", "<=", "<>", "==" };
 	char relop[6][3] = { "g", "l", "ge", "le", "ne", "e" };
 	attribute *op1, *op2;
 	op1 = &s->d[s->t - 2].attr;
@@ -256,7 +254,7 @@ void exp_var_exp_item(item *it) {
 	}
 }
 void var_id(item *it) {
-	it->attr.value = s->d[s->t].attr.value;
+	factor_id(it);
 }
 
 void mulop_mul(item *i) {
@@ -272,10 +270,6 @@ void addop_plus(item *i) {
 void addop_minus(item *i) {
 	i->attr.value = MINUS;
 }
-//
-//void addop_(item *i){
-//	i->attr.value = DIV;
-//}
 
 void term_factor(item *it) {
 	it->attr.value = s->d[s->t].attr.value;
@@ -287,14 +281,13 @@ void exp_item_term(item *it) {
 }
 void addop_mulop(item *it) {
 	attribute *r, *op1, *op2, *op;
-	char op2_e[16] = { '\0' }; // op2在汇编中的形式
 	r = &it->attr;
 	op = &s->d[s->t - 1].attr;
 	op1 = &s->d[s->t - 2].attr;
 	op2 = &s->d[s->t].attr;
 
 	r->value = new_temp();
-	r->value_type = VALUE_STACK_ADDR;
+	r->value_type = VALUE_TEMP_ADDR;
 	// op1类型
 	switch (op1->value_type) {
 	case VALUE_STACK_ADDR:
@@ -320,18 +313,15 @@ void addop_mulop(item *it) {
 	}
 	switch (op->value) {
 	case PLUS:
-//		sprintf(code.data[code.quad++], "addl %s, %%eax\n", op2_e);
 		sprintf(code.data[code.quad++], "addl %%ebx, %%eax\n");
 		break;
 	case MINUS:
-//		sprintf(code.data[code.quad++], "subl %s, %%eax\n", op2_e);
 		sprintf(code.data[code.quad++], "subl %%ebx, %%eax\n");
 		break;
 	case MUL:
 		sprintf(code.data[code.quad++], "mull %%ebx\n");
 		break;
 	case DIV:
-//		sprintf(code.data[code.quad++], "divl %s\n", op2_e);
 		sprintf(code.data[code.quad++], "divl %%ebx\n");
 		break;
 	default:
@@ -340,7 +330,7 @@ void addop_mulop(item *it) {
 	// 结果一定是临时变量
 	sprintf(code.data[code.quad++], "movl $%d, %%edi\n", r->value);
 	sprintf(code.data[code.quad++], "movl %%eax, temp(,%%edi,4)\n");
-//	sprintf(code.data[code.quad++], "movl %%eax, %d(%%ebp)\n", r->value);
+
 }
 void exp_item_addop(item *it) {
 	addop_mulop(it);
@@ -355,7 +345,7 @@ void factor_exp_item(item *it) {
 void factor_id(item *it) {
 //	int offset = look_up(s->d[s->t].attr.value);
 	int o = look_up(&id_names[s->d[s->t].attr.value], cur_func);
-	if (o > MAGIC_NUM) { // 局部变量
+	if (o >= MAGIC_NUM) { // 局部变量
 		it->attr.value = s_t[cur_func].v[o - MAGIC_NUM].offset; // -8(%ebp)
 	} else { // 参数
 		it->attr.value = s_t[cur_func].p[o].offset;
@@ -375,9 +365,6 @@ void type_char(item * it) {
 	it->attr.type = CHAR;
 	it->attr.width = 4;
 }
-/*
- s->d[s->t].attr.
- */
 void t_type_type(item * it) {
 	it->attr.type = s->d[s->t].attr.type;
 	it->attr.width = s->d[s->t].attr.width;
@@ -403,12 +390,6 @@ void test(item * item) {
 
 // 无操作的空函数
 void null_f(item * item) {
-	//printf("hello, state is %d\n", item->state);
-
 	return;
-}
-
-void lib_print(item *it) {
-
 }
 

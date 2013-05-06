@@ -32,10 +32,10 @@ int lexan() {
 		lineno++;
 		return lexan();
 	}
-	if (isalpha(ch)) {
+	if (isalpha(ch) || ch == '_') { // 支持以下划线开始的id
 		token[i++] = ch;
 		ch = fgetc(fp);
-		while (isalnum(ch)) {
+		while (isalnum(ch) || ch == '_') {
 			token[i++] = ch;
 			ch = fgetc(fp);
 		}

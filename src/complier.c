@@ -22,6 +22,7 @@ char header[] = { ""
 		".globl _start\n"
 		"_start:\n"
 		"\tnop\n"
+		"\tpushl %ebp\n"
 		"\tmovl %esp, %ebp\n" // 临时
 //		"movl $4321, %eax\n"
 //		"call print_int\n"
@@ -47,7 +48,7 @@ void init() {
 	code.quad = 0;
 	cur_func = -1;
 
-//	init_symbol();
+	init_symbol();
 }
 
 int main(void) {

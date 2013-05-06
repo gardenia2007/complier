@@ -30,7 +30,6 @@ list_item * make_list(int i){
 // 檢查是否已存在該項
 bool exist_item(list_item *list, list_item *p){
 	list_item * temp;
-//	temp = list;
 	for(temp = list; temp != NULL; temp = temp->next)
 		if(temp == p) return TRUE;
 	return FALSE;
@@ -64,7 +63,6 @@ void back_patch(list_item *p, int i){
 	for(t = p; t != NULL; t = t->next){
 		sprintf(code.data[t->quad], code.data[t->quad], i);
 		code.label[i-1] = LABEL;
-//		printf("%s\n", code.data[t->quad]);
 		free(t); // 释放空间
 	}
 	p = NULL;

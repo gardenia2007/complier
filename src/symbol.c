@@ -37,8 +37,31 @@ keyword keywords[] = {
 		{0,		0}
 };
 
-void init_symbol(){
+typedef struct{
+	char name[VAR_NAME_MAX];
+	int p_cnt; // 参数个数
+	int p_space; // 局部变量所占空间
+	int ret_type;
+}lib_func_item;
 
+lib_func_item lib_func[] = {
+		{"print_int", 1, 0, INT},
+		{"", -1, -1, -1},
+};
+
+void insert_lib_func(){
+	int i;
+	for(i = 0; lib_func[i].ret_type != -1; i++){
+		new_func_item();
+		s_t[cur_func].name = lib_func[i].name;
+		s_t[cur_func].last_p = lib_func[i].p_cnt;
+		s_t[cur_func].p_offset = lib_func[i].p_space;
+		s_t[cur_func].ret_type = lib_func[i].ret_type;
+	}
+}
+
+void init_symbol(){
+	insert_lib_func();
 }
 
 // 如果是关键字，返回其对应的lex，否则返回ID
@@ -53,7 +76,6 @@ int if_keyword(char * s){
 int new_func_item() {
 //	symentry * p;
 	cur_func++;
-	s_t[cur_func].space = 0;
 	s_t[cur_func].last_v = 0;
 	s_t[cur_func].v_offset = -4;
 	s_t[cur_func].last_p = 0;
@@ -116,25 +138,6 @@ int insert_id_name(char * s){
 	lastchar += ( len + 1 );
 	return tmp;
 }
-/*
-int insert_str(){
-}
-
-int insert(char * s, int token){
-	int len = 0;
-	len = strlen(s);
-	if(len + lastchar + 1 >= STR_MAX)
-		error_handle(lineno, "lexemes full");
-	if(lastentry + 1 >= VAR_MAX)
-		error_handle(lineno, "symbol table full");
-	lastentry += 1;
-	symtable[lastentry].token = token;
-	symtable[lastentry].name = &lexemes[lastchar];
-	strcpy(&lexemes[lastchar], s);
-	lastchar += ( len + 1 );
-	return lastentry;
-}
-*/
 
 
 

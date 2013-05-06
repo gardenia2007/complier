@@ -12,7 +12,6 @@
 #include "stack.h"
 
 void reset_it(item * it){
-	//it->attr.value = 0;
 	it->attr.value_type = VALUE_STACK_ADDR;
 	it->attr.offset = 0;
 	it->attr.type = 0;
@@ -22,17 +21,6 @@ void reset_it(item * it){
 	it->attr.true_list = NULL;
 	it->attr.false_list = NULL;
 	it->attr.next_list = NULL;
-}
-
-void parse() {
-	//lex = lexan();
-	//STACK * stack = init_stack();
-	while ((lex = lexan()) != DONE) {
-		if(lex != ERROR)
-		//printf("<\t%d,\t%d\t>\n", lex, tokenval);
-		//push(lex, stack);
-		lex = lexan();
-	}
 }
 
 void lalr_parse(){
@@ -67,7 +55,6 @@ void lalr_parse(){
 			pop_num(production[act].right_count, s);
 
 			tmp = get_top(0, s); // 弹栈后获取栈顶元素
-			//stack->data[stack->top].state;
 			it.state = go_to[tmp.state][production[act].left];
 			push(it, s);
 

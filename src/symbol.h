@@ -21,7 +21,6 @@ char id_names[STR_MAX];
 
 /* 变量符号表项 */
 typedef struct{
-//	char name[VAR_NAME_MAX];
 	char *name; // 指向id_names
 	int type;
 	int offset; // 偏移 相对于%ebp或temp
@@ -29,10 +28,8 @@ typedef struct{
 
 /* 函数符号表项 */
 typedef struct{
-//	char name[VAR_NAME_MAX]; // 函数名最长15个字符
 	char *name; // 指向id_names
 
-	int space; // 所有变量所占的空间
 
 	int last_v;
 	int v_offset;
@@ -59,8 +56,7 @@ typedef struct{
 
 
 void init_symbol();
-int look_up(char *, int );
-//int look_up_v(char *, int);
+int look_up(char *, int ); // 查找变量（局部变量和参数）
 int look_up_func(char *);
 int insert(char *, int, int);
 void update_offset(int p, int offset, int);

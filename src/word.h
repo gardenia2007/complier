@@ -38,7 +38,7 @@
 #define WHILE		       26
 #define ELSE		       27
 
-// 下面的几个宏定义必须是连续的（在数组中当作下标用）
+// 下面的几个宏定义必须是连续的（因为在数组中当作下标用）
 #define GT	               28
 #define LT	               29
 #define GE	               30

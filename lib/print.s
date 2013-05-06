@@ -3,10 +3,11 @@
 	.comm temp, 32
 	.comm digits,4
 .section .text
-.global print_int
+.global FUNC_print_int
 
-print_int:
+FUNC_print_int:
 	# param => eax
+	mov 4(%esp), %eax
 
 	xor %edx, %edx
 	xor %ebx, %ebx
