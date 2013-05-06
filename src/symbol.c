@@ -40,12 +40,14 @@ keyword keywords[] = {
 typedef struct{
 	char name[VAR_NAME_MAX];
 	int p_cnt; // 参数个数
-	int p_space; // 局部变量所占空间
+	int p_space; // 参数所占空间
 	int ret_type;
 }lib_func_item;
 
 lib_func_item lib_func[] = {
-		{"print_int", 1, 0, INT},
+		{"print_int", 1, 4, INT},
+		{"exit", 1, 4, VOID},
+		{"print_br", 1, 4, VOID},
 		{"", -1, -1, -1},
 };
 

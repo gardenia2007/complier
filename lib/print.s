@@ -1,9 +1,19 @@
 .section .data
+	br:
+		.ascii "\n"
 .section .bss
 	.comm temp, 32
 	.comm digits,4
 .section .text
-.global FUNC_print_int
+.global FUNC_print_int, FUNC_print_br
+
+FUNC_print_br:
+	movl $4, %eax
+	movl $1, %ebx
+	movl $br, %ecx
+	movl $1, %edx
+	int $0x80
+	ret
 
 FUNC_print_int:
 	# param => eax

@@ -3,6 +3,7 @@
 
 	_start		 => start ;
 	// 在规约出任何产生式之前需要先做一些动作，此处需要标志非终结符
+	// main函数当作普通函数处理
 	start	     => main_func func_list ;
 	start	     => main_func ;
 

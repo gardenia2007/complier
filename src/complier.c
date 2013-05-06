@@ -24,22 +24,15 @@ char header[] = { ""
 		"\tnop\n"
 		"\tpushl %ebp\n"
 		"\tmovl %esp, %ebp\n" // 临时
+		"\tsubl $16, %esp\n"
 //		"movl $4321, %eax\n"
 //		"call print_int\n"
 		"\n"
 		"" };
 
 char footer[] = { ""
-		"\n"
-		"\tmovl $0, %ebx\n"
-		"\tmovl $1, %eax\n"
-		"\tint $0x80\n"
 		"\n" };
 
-char lib_echo[] = { ""
-		"movl $4, %eax\n"
-		"movl $1, %ebx\n"
-		"" };
 
 void init() {
 	lineno = 1;
