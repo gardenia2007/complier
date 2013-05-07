@@ -56,6 +56,9 @@ void type_char(item *);
 void declare_id(item *);
 void t_type_type(item *);
 
+void d_array_num_list(item *);// 带赋值的数组声明
+void d_array_num(item *);// 不带赋值
+
 void factor_id(item *);
 void factor_num(item *);
 void factor_exp_item(item *);

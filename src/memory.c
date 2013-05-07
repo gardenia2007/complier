@@ -11,6 +11,11 @@ int new_temp(){
 	temp_addr += 4;
 	return temp_addr;
 }
+// 在.bss段生成指定长度的数组
+int new_array(){
+	temp_addr += 4;
+	return temp_addr;
+}
 
 // 下一行号
 int next_quad(){

@@ -26,13 +26,13 @@ void sub_print_abs(int a, int b){
 	print_br();
 }
 
-
+# 打印数和回车
 void p_int_br(int w){
 	print_int(w);
 	print_br();
 }
 
-
+# 从x加到y
 void gas(int x, int y){
 	int t;
 	t = 0;
@@ -49,12 +49,15 @@ void main () {
 	int j;
 	int k;
 	k = 3;
-	i = 0;
-	j = 0;
+	i = 5;
+	j = 1;
 
 	print_br();
-	sub_print(3, 5);
-#	sub_print_abs(3, 5);
-	gas(1, 100);
+	sub_print(k, i);
+	print_br();
+	sub_print_abs(k, i);
+	print_br();
+	gas(j, 100);
+	print_br();
 	exit(1);
 }
