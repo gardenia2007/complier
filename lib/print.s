@@ -1,6 +1,8 @@
 .section .data
 	br:
 		.ascii "\n"
+	neg:
+		.ascii "-"
 .section .bss
 	.comm temp, 32
 	.comm digits,4
@@ -19,10 +21,28 @@ FUNC_print_int:
 	# param => eax
 	mov 4(%esp), %eax
 
+	
+	cmp $0, %eax
+	jg	L_pos
+
+	pushl %eax
+
+	movl $4, %eax
+	movl $1, %ebx
+	movl $neg, %ecx
+	movl $1, %edx
+	int $0x80
+
+	popl %ebx
+	mov $0, %eax
+	subl %ebx, %eax
+
+L_pos:
+
 	xor %edx, %edx
 	xor %ebx, %ebx
 	xor %ecx, %ecx
-	
+
 	movl $10, %esi
 L_1:
 	divl %esi
@@ -33,6 +53,8 @@ L_1:
 	jz L_2
 	jmp L_1	
 	
+
+
 L_2:
 	movl %ecx, digits
 	xor %edi, %edi

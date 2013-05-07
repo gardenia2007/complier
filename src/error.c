@@ -7,6 +7,6 @@
 
 #include "global.h"
 
-void error_handle(int line, char * msg){
-	printf("ERROR : %s in line %d\n", msg, line);
+void error_handle(char * msg){
+	printf("ERROR : %s in line %d\n", msg, lineno);
 }

@@ -27,7 +27,7 @@ typedef int bool;
 #define ERROR	-2
 #define NONE	-1
 #define STR_MAX	1204
-#define FUNC_MAX	8  // 最多FUNC_MAX个函数，包括main
+#define FUNC_MAX	16  // 最多FUNC_MAX个函数，包括main
 #define	VAR_MAX		16 // 最多VAR_MAX个变量
 #define	VAR_NAME_MAX	16
 
@@ -39,6 +39,8 @@ typedef int bool;
 
 #define NO_LABEL	0
 #define LABEL		123
+
+#define NOT_FOUND			-404
 
 #define MAX_ASM_LINE	1024
 #define MAX_CHAR_PER_ASM_LINE	64
@@ -56,10 +58,7 @@ int tokenval;
 int lex; // 当前token
 int lineno; // 当前行号
 
-
-// 符号表全局偏移
-int offset;
-
+int fatal_error; // 是否发生了严重的语法错误
 
 // 回填使用的数据结构和函数
 struct s_list_item{
@@ -97,7 +96,7 @@ typedef struct{
 void lalr_parse();
 void parse();
 int lexan();
-void error_handle(int, char *);
+void error_handle(char *);
 
 //
 //typedef struct {

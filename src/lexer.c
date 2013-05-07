@@ -71,7 +71,7 @@ int lexan() {
 				lex = OR;
 			} else {
 				fseek(fp, -1L, SEEK_CUR);
-				error_handle(lineno, "Missing '|'");
+				error_handle("Error : Missing '|'");
 			}
 			break;
 		case '&':
@@ -81,7 +81,7 @@ int lexan() {
 				lex = AND;
 			} else {
 				fseek(fp, -1L, SEEK_CUR);
-				error_handle(lineno, "Missing '&'");
+				error_handle("Error : Missing '&'");
 			}
 			break;
 		case '>':
@@ -147,7 +147,7 @@ int lexan() {
 			break;
 		default:
 			lex = ERROR;
-			error_handle(lineno, "Unkonwn character");
+			error_handle("Error : Unkonwn character");
 			break;
 		}
 		token[i] = '\0';
@@ -165,7 +165,7 @@ int get_num(int i, int flag)
 	ch = fgetc(fp);
 	while (isdigit(ch) || ch == '.') {
 		if (ch == '.' && flag == 1) {
-			error_handle(lineno, "unexpected '.' ");
+			error_handle("Error : unexpected '.' ");
 			ch = fgetc(fp);
 			continue;
 		}

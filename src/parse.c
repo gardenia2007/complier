@@ -40,8 +40,9 @@ void lalr_parse(){
 		tmp = get_top(0, s);
 		act = action[tmp.state][cur_lex];
 		if(act == E || tmp.state == E){
-			error_handle(lineno, "Parse error\n");
-			break;
+			error_handle( "Syntax Error : please check");
+			cur_lex = lexan(); // 继续向前，直到找到可以进行分析的token
+			continue;
 		}else if(act < 0){ // shift
 			it.state = -act;
 			it.attr.value = tokenval; // 符号表项id等
@@ -61,10 +62,12 @@ void lalr_parse(){
 
 //			printf("%d\t: %s => %s\n", act, production_left[production[act].left], production[act].right);
 		}else if(act == AC){ // accept
-			printf("Accept\n");
+//			printf("Syntax Accept\n");
+			break;
+		}else if(fatal_error == TRUE){ // 翻译时发现了了严重的错误
 			break;
 		}else{
-			error_handle(lineno, "Parse error");
+			error_handle( "Syntax :  please check");
 		}
 	}
 }

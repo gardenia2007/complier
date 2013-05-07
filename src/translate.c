@@ -88,13 +88,22 @@ void M_func_content_declare(item * it) {
 // 无参数调用
 void call_func(item *it) {
 	int func = look_up_func(&id_names[s->d[s->t - 2].attr.value]);
+	if (func == NOT_FOUND) { // 符号表没有找到
+		fatal_error = TRUE;
+		error_handle("Fatal Error : function symbol not found!");
+	}
 	sprintf(code.data[code.quad++], "call FUNC_%s\n", s_t[func].name);
 }
 void call_func_param(item *it) {
 	int i;
 	int func = look_up_func(&id_names[s->d[s->t - 3].attr.value]);
+	if (func == NOT_FOUND) { // 符号表没有找到
+		fatal_error = TRUE;
+		error_handle("Fatal Error : function symbol not found!");
+	}
 	if (param_queue.tail + 1 != s_t[func].last_p) {
-		error_handle(lineno, "mismatch function parameters!");
+		fatal_error = TRUE;
+		error_handle("Fatal Error : mismatch function parameters!");
 	}
 	for (i = 0; i <= param_queue.tail; i++) {
 		switch (param_queue.value_type[i]) {
@@ -332,20 +341,20 @@ void addop_mulop(item *it) {
 	op1 = &s->d[s->t - 2].attr;
 	op2 = &s->d[s->t].attr;
 
-
 	// 检查是否是自增运算
 	// 需要检查是否是 i = i + 1 这种类型的运算
 	if (op->value == PLUS && s->d[s->t - 4].attr.value_type == VALUE_STACK_ADDR) {
+		r->value_type = VALUE_NONE;
 		if (op1->value_type == VALUE_STACK_ADDR && op2->value_type == VALUE_IMM
 				&& op2->value == 1 && s->d[s->t - 4].attr.value == op1->value) {
 			sprintf(code.data[code.quad++], "incl %d(%%ebp)\n", op1->value);
+			return;
 		}
 		if (op2->value_type == VALUE_STACK_ADDR && op1->value_type == VALUE_IMM
 				&& op1->value == 1 && s->d[s->t - 4].attr.value == op2->value) {
 			sprintf(code.data[code.quad++], "incl %d(%%ebp)\n", op2->value);
+			return;
 		}
-		r->value_type = VALUE_NONE;
-		return;
 	}
 
 	r->value = new_temp();
@@ -408,7 +417,10 @@ void factor_exp_item(item *it) {
 void factor_id(item *it) {
 //	int offset = look_up(s->d[s->t].attr.value);
 	int o = look_up(&id_names[s->d[s->t].attr.value], cur_func);
-	if (o >= MAGIC_NUM) { // 局部变量
+	if (o == NOT_FOUND) { // 符号表没有找到
+		fatal_error = TRUE;
+		error_handle("Fatal Error : variable symbol not found!");
+	} else if (o >= MAGIC_NUM) { // 局部变量
 		it->attr.value = s_t[cur_func].v[o - MAGIC_NUM].offset; // -8(%ebp)
 	} else { // 参数
 		it->attr.value = s_t[cur_func].p[o].offset;

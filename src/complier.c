@@ -31,9 +31,9 @@ char footer[] = { ""
 void init() {
 	lineno = 1;
 	temp_addr = 0;
-	offset = 0;
 	code.quad = 0;
 	cur_func = -1;
+	fatal_error = FALSE;
 
 	init_symbol();
 }
@@ -54,19 +54,24 @@ int main(void) {
 
 	init();
 	lalr_parse();
-
-	printf("%s", header);
+	if(fatal_error == TRUE){
+		printf("Complie Failed!\n");
+		return -1;
+	}else{
+		printf("Complie Successed!\n");
+	}
+//	printf("%s", header);
 	fprintf(asm_fp, "%s", header);
 	for (k = 0; k < code.quad; k++) {
 		if (code.label[k] == LABEL) { // 输出label
-			printf("L_%d:\n", k + 1);
+//			printf("L_%d:\n", k + 1);
 			fprintf(asm_fp, "L_%d:\n", k + 1);
 		}
-		printf("\t%s", code.data[k]);
+//		printf("\t%s", code.data[k]);
 		fprintf(asm_fp, "\t%s", code.data[k]);
 	}
 
-	printf("%s", footer);
+//	printf("%s", footer);
 	fprintf(asm_fp, "%s", footer);
 
 	return EXIT_SUCCESS;
