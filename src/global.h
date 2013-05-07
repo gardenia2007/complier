@@ -35,6 +35,7 @@ typedef int bool;
 #define VALUE_IMM			2
 #define VALUE_ADDR			3 // 内存中普通的变量
 #define VALUE_TEMP_ADDR		4 // 临时变量.bss
+#define VALUE_NONE			5 // inc优化时不需要临时变量
 
 #define NO_LABEL	0
 #define LABEL		123

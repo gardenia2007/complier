@@ -4,15 +4,24 @@ int xxy(int w,int k){
 	w = w + k;
 	print_int(w);
 	print_br();
-	print_int(k);
 	
 }
 
+int d(int w){
+	print_int(w);
+	print_br();
+}
 
 void main () {
-	int k;
-	k = 1;
-	xxy(k,123);
-	print_br();
+	int i;
+	int j;
+	i = 0;
+	while(i <= 9){
+		i = i + 1;
+		while( j <= 9 ){
+			j = j + 1;	
+			d(j);
+		};
+	};
 	exit(1);
 }

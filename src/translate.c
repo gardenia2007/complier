@@ -6,23 +6,25 @@
  */
 #include "translate.h"
 
+// 没有参数的函数调用 结束
 void func(item *it) {
 	// 回填局部變量所佔空間
 	sprintf(code.data[s->d[s->t - 5].attr.value],
 			code.data[s->d[s->t - 5].attr.value],
-			- ( s_t[cur_func].v_offset + 4));
+			-(s_t[cur_func].v_offset + 4));
 	sprintf(code.data[code.quad++], "addl $%d, %%esp\n",
-			- ( s_t[cur_func].v_offset + 4));
+			-(s_t[cur_func].v_offset + 4));
 	sprintf(code.data[code.quad++], "popl %%ebp\n");
 	sprintf(code.data[code.quad++], "ret\n");
 }
+// 有参数的函数调用 结束
 void func_param(item *it) {
 	// 回填局部變量所佔空間
 	sprintf(code.data[s->d[s->t - 6].attr.value],
 			code.data[s->d[s->t - 6].attr.value],
-			- ( s_t[cur_func].v_offset + 4));
+			-(s_t[cur_func].v_offset + 4));
 	sprintf(code.data[code.quad++], "addl $%d, %%esp\n",
-			- ( s_t[cur_func].v_offset + 4));
+			-(s_t[cur_func].v_offset + 4));
 	sprintf(code.data[code.quad++], "popl %%ebp\n");
 	sprintf(code.data[code.quad++], "ret\n");
 }
@@ -35,10 +37,12 @@ void M_func_start(item * it) {
 	s_t[cur_func].name = id_names + s->d[s->t].attr.value;
 	// TODO 保存返回值类型
 	//
-	if(strcmp(s_t[cur_func].name, main) == 0) // 如果是主函數
-		sprintf(code.data[code.quad++], "_start:\n\tpushl %%ebp\n", s_t[cur_func].name);
+	if (strcmp(s_t[cur_func].name, main) == 0) // 如果是主函數
+		sprintf(code.data[code.quad++], "_start:\n\tpushl %%ebp\n",
+				s_t[cur_func].name);
 	else
-		sprintf(code.data[code.quad++], "FUNC_%s:\n\tpushl %%ebp\n", s_t[cur_func].name);
+		sprintf(code.data[code.quad++], "FUNC_%s:\n\tpushl %%ebp\n",
+				s_t[cur_func].name);
 
 	sprintf(code.data[code.quad++], "movl %%esp, %%ebp\n");
 	// 局部变量所占空间,等函数归约出来后回填
@@ -56,8 +60,14 @@ void param_list_item(item *it) {
 	s_t[cur_func].last_p++;
 }
 void param_list(item *it) {
-	// 操作是一样的
-	param_list_item(it);
+	// 操作和param_list_item是一样的
+	// 放入局部变量的符号表中
+	variable_item *t = &s_t[cur_func].p[s_t[cur_func].last_p];
+	t->type = s->d[s->t - 1].attr.type;
+	t->name = &id_names[s->d[s->t - 1].attr.value];
+	t->offset = s->d[s->t - 1].attr.offset;
+
+	s_t[cur_func].last_p++;
 }
 void param_item_id(item *it) {
 	it->attr.value = s->d[s->t].attr.value; // id名字在id_names的起始位置
@@ -109,8 +119,10 @@ void call_func_param(item *it) {
 	// 调用
 	sprintf(code.data[code.quad++], "call FUNC_%s\n", s_t[func].name);
 	// 清理栈上的参数
-	sprintf(code.data[code.quad++], "addl $%d, %%esp\n", s_t[func].p_offset - 8);
+	sprintf(code.data[code.quad++], "addl $%d, %%esp\n",
+			s_t[func].p_offset - 8);
 }
+// 调用时参数列表
 void d_param_item_id(item *it) {
 	factor_id(it);
 }
@@ -280,6 +292,9 @@ void exp_var_exp_item(item *it) {
 		sprintf(code.data[code.quad++], "movl $%d, %d(%%ebp)\n",
 				s->d[s->t].attr.value, s->d[s->t - 2].attr.value);
 		break;
+	case VALUE_NONE:
+		// 已经经过inc指令优化，不需要临时变量
+		break;
 	default:
 		break;
 	}
@@ -317,8 +332,25 @@ void addop_mulop(item *it) {
 	op1 = &s->d[s->t - 2].attr;
 	op2 = &s->d[s->t].attr;
 
+
+	// 检查是否是自增运算
+	// 需要检查是否是 i = i + 1 这种类型的运算
+	if (op->value == PLUS && s->d[s->t - 4].attr.value_type == VALUE_STACK_ADDR) {
+		if (op1->value_type == VALUE_STACK_ADDR && op2->value_type == VALUE_IMM
+				&& op2->value == 1 && s->d[s->t - 4].attr.value == op1->value) {
+			sprintf(code.data[code.quad++], "incl %d(%%ebp)\n", op1->value);
+		}
+		if (op2->value_type == VALUE_STACK_ADDR && op1->value_type == VALUE_IMM
+				&& op1->value == 1 && s->d[s->t - 4].attr.value == op2->value) {
+			sprintf(code.data[code.quad++], "incl %d(%%ebp)\n", op2->value);
+		}
+		r->value_type = VALUE_NONE;
+		return;
+	}
+
 	r->value = new_temp();
 	r->value_type = VALUE_TEMP_ADDR;
+
 	// op1类型
 	switch (op1->value_type) {
 	case VALUE_STACK_ADDR:
