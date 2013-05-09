@@ -20,13 +20,23 @@ int new_temp();
 typedef struct{
 	// 代码标号
 	char label[MAX_ASM_LINE];
+	char * more[MAX_ASM_LINE];
 	// 生成的代码
 	char data[MAX_ASM_LINE][MAX_CHAR_PER_ASM_LINE];
 	// 当前生成的代码编号，即code数组下标
 	int quad;
 } s_code;
 s_code code;
+
 int next_quad();
+
+typedef struct{
+	char data[128][32];
+	int no;
+} code_header;
+
+code_header data_seg;
+
 
 list_item * make_list(int i);
 list_item * merge(list_item *p, list_item *q);
@@ -60,6 +70,7 @@ void d_array_num_list(item *);// 带赋值的数组声明
 void d_array_num(item *);// 不带赋值
 
 void factor_id(item *);
+void factor_array(item *);
 void factor_num(item *);
 void factor_exp_item(item *);
 void term_factor(item *);
@@ -127,6 +138,16 @@ void param_list(item *);
 void param_list_item(item *);
 void param_item_id(item *);
 void param_item_array(item *);
+
+
+void declare_d_array(item *);
+void d_array(item *);
+void d_array_init(item *);
+
+void d_array_list_list(item *);
+void d_array_list_item(item *);
+void d_array_item_num(item *);
+void d_array_item_ch(item *);
 /*
 void (item *);
 

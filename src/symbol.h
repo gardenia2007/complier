@@ -14,6 +14,12 @@
 #define FUNCTION	1
 #define KEYWORD		2
 
+#define NO_INIT		-1
+#define ARRAY				321
+#define NOT_ARRAY			0
+
+#define MAX_ARRAY_ELEMENTS	32
+
 #define MAGIC_NUM	(VAR_MAX + 444)
 
 // 存放id的name字符串
@@ -24,6 +30,9 @@ typedef struct{
 	char *name; // 指向id_names
 	int type;
 	int offset; // 偏移 相对于%ebp或temp
+	int array; // 是否是数组
+	int array_init;
+	int array_size;
 }variable_item;
 
 /* 函数符号表项 */
@@ -42,6 +51,12 @@ typedef struct{
 	int ret_type;
 }func_item;
 
+typedef struct{
+	int data[MAX_ARRAY_ELEMENTS];
+	int i;
+}s_array_init;
+
+s_array_init array_init[4]; // 同一函数内最多可声明4个数组
 
 func_item s_t[FUNC_MAX]; // symbol_table
 
@@ -60,6 +75,14 @@ int look_up(char *, int ); // 查找变量（局部变量和参数）
 int look_up_func(char *);
 int insert(char *, int, int);
 void update_offset(int p, int offset, int);
+
+int get_free_array_init();
+void free_array_init(int);
+
+
+
+
+
 
 
 #endif /* SYMBOL_H_ */

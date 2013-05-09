@@ -45,8 +45,14 @@ void insert_lib_func() {
 	}
 }
 
+void init_array_init() {
+	int i;
+	for (i = 3; i >= 0; i--)
+		array_init[i].i = -1;
+}
 void init_symbol() {
 	insert_lib_func();
+	init_array_init();
 }
 
 // 如果是关键字，返回其对应的lex，否则返回ID
@@ -116,6 +122,23 @@ int insert(char * s, int type, int func) {
 void update_offset(int p, int offset, int func) {
 	s_t[func].v[p].offset = offset;
 }
+
+int get_free_array_init() {
+	int i;
+	for (i = 3; i >= 0; i--) {
+		if (array_init[i].i == -1) {
+			array_init[i].i = 0;
+			return i;
+		}
+	}
+	//
+	error_handle("Complier Error : no array space");
+	return FALSE;
+}
+void free_array_init(int k) {
+	array_init[k].i = -1;
+}
+
 // 把id的名字存起来，返回其在一个字符串数组的起始位置
 int insert_id_name(char * s) {
 	int len = 0, tmp;

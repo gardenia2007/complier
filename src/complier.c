@@ -67,6 +67,9 @@ int main(void) {
 //			printf("L_%d:\n", k + 1);
 			fprintf(asm_fp, "L_%d:\n", k + 1);
 		}
+		if(code.more[k] != NULL){
+			fprintf(asm_fp, "%s", code.more[k]);
+		}
 //		printf("\t%s", code.data[k]);
 		fprintf(asm_fp, "\t%s", code.data[k]);
 	}

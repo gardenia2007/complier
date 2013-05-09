@@ -42,6 +42,7 @@ typedef int bool;
 
 #define NOT_FOUND			-404
 
+
 #define MAX_ASM_LINE	1024
 #define MAX_CHAR_PER_ASM_LINE	64
 

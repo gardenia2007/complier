@@ -6,12 +6,84 @@
  */
 #include "translate.h"
 
+void d_array_list_list(item *it) {
+	int k = s->d[s->t - 2].attr.value;
+	it->attr.value = k;
+	array_init[k].data[array_init[k].i++] = s->d[s->t].attr.value;
+}
+void d_array_list_item(item *it) {
+	int k = get_free_array_init();
+	it->attr.value = k;
+	array_init[k].data[array_init[k].i++] = s->d[s->t].attr.value;
+}
+void d_array_item_num(item *it) {
+	it->attr.value = s->d[s->t].attr.value;
+	it->attr.value_type = NUM;
+}
+void d_array_item_ch(item *it) {
+	it->attr.value = s->d[s->t - 1].attr.value;
+	it->attr.value_type = CHAR;
+}
+void declare_d_array(item *it) {
+
+}
+void d_array(item *it) {
+	variable_item *t = &s_t[cur_func].v[s_t[cur_func].last_v];
+	t->type = s->d[s->t - 4].attr.value;
+	t->name = &id_names[s->d[s->t - 3].attr.value];
+	t->offset = s_t[cur_func].v_offset; // 栈中分配
+	t->array = ARRAY;
+	t->array_init = NO_INIT;
+
+	s_t[cur_func].v_offset -= (s->d[s->t - 1].attr.value
+			* s->d[s->t - 4].attr.width); // update offset
+	s_t[cur_func].last_v++;
+}
+
+// 复制到栈中实现数组的初始化
+void d_array_init(item *it) {
+	variable_item *t = &s_t[cur_func].v[s_t[cur_func].last_v];
+	t->type = s->d[s->t - 8].attr.value;
+	t->name = &id_names[s->d[s->t - 7].attr.value];
+	t->offset = s_t[cur_func].v_offset; // 栈中分配
+	t->array = ARRAY;
+	// 初始值存放的数组
+	t->array_init = s->d[s->t - 1].attr.value;
+
+	s_t[cur_func].v_offset -= (s->d[s->t - 5].attr.value
+			* s->d[s->t - 8].attr.width); // update offset
+	s_t[cur_func].last_v++;
+}
+// 回填函数声明时不能确定的值
+void func_backpatch(int m) {
+	int i, k, addr, offset, temp;
+//	char * buffer = code.data[s->d[s->t - 5].attr.offset];
+	char * buffer = (char *) malloc(256);
+	code.more[s->d[s->t - m].attr.offset] = buffer;
+	func_item *t = &s_t[cur_func];
+	// 回填局部變量所佔空間
+	sprintf(code.data[s->d[s->t - m].attr.value],
+			code.data[s->d[s->t - m].attr.value], -(t->v_offset + 4));
+
+	// 数组初始化回填
+	offset = 0;
+	for (i = 0; i < t->last_v; i++) {
+		if (t->v[i].array == ARRAY && t->v[i].array_init != NO_INIT) {
+			addr = t->v[i].offset;
+			for (k = 0; k < array_init[t->v[i].array_init].i; k++) {
+				temp = sprintf(buffer + offset, "\tmovl $%d %d(%%ebp)\n",
+						array_init[t->v[i].array_init].data[k], addr);
+				addr -= 4;
+				offset += temp;
+			}
+			free_array_init(t->p[i].array_init);
+		}
+	}
+}
+
 // 没有参数的函数调用 结束
 void func(item *it) {
-	// 回填局部變量所佔空間
-	sprintf(code.data[s->d[s->t - 5].attr.value],
-			code.data[s->d[s->t - 5].attr.value],
-			-(s_t[cur_func].v_offset + 4));
+	func_backpatch(5);
 	sprintf(code.data[code.quad++], "addl $%d, %%esp\n",
 			-(s_t[cur_func].v_offset + 4));
 	sprintf(code.data[code.quad++], "popl %%ebp\n");
@@ -19,10 +91,7 @@ void func(item *it) {
 }
 // 有参数的函数调用 结束
 void func_param(item *it) {
-	// 回填局部變量所佔空間
-	sprintf(code.data[s->d[s->t - 6].attr.value],
-			code.data[s->d[s->t - 6].attr.value],
-			-(s_t[cur_func].v_offset + 4));
+	func_backpatch(6);
 	sprintf(code.data[code.quad++], "addl $%d, %%esp\n",
 			-(s_t[cur_func].v_offset + 4));
 	sprintf(code.data[code.quad++], "popl %%ebp\n");
@@ -48,6 +117,9 @@ void M_func_start(item * it) {
 	// 局部变量所占空间,等函数归约出来后回填
 	it->attr.value = code.quad;
 	sprintf(code.data[code.quad++], "subl $%%d, %%%%esp\n");
+	// 数组初始化，函数归约时回填
+	it->attr.offset = code.quad;
+	sprintf(code.data[code.quad++], "#array init\n");
 }
 // 第一个参数
 void param_list_item(item *it) {
@@ -413,6 +485,33 @@ void term_term_mulop_factor(item *it) {
 void factor_exp_item(item *it) {
 	it->attr.value = s->d[s->t - 1].attr.value;
 	it->attr.value_type = s->d[s->t - 1].attr.value_type;
+}
+void factor_array(item *it) {
+	// 取下标
+	int index;
+	switch (s->d[s->t - 1].attr.value_type) {
+	case VALUE_IMM:
+		index = s->d[s->t - 1].attr.value;
+		break;
+	default:
+		index = 0;
+		error_handle("unknown array index");
+		break;
+	}
+
+	// 查符號表
+	int o = look_up(&id_names[s->d[s->t - 3].attr.value], cur_func);
+	if (o == NOT_FOUND) { // 符号表没有找到
+		fatal_error = TRUE;
+		error_handle("Fatal Error : variable symbol not found!");
+	} else if (o >= MAGIC_NUM) { // 局部变量
+		it->attr.value = s_t[cur_func].v[o - MAGIC_NUM].offset
+				- (index % s_t[cur_func].v[o - MAGIC_NUM].array_size) * 4; // 与数组大小取模，防止越界
+		it->attr.value_type = VALUE_STACK_ADDR;
+	} else { // 参数
+		it->attr.value = s_t[cur_func].p[o].offset + 4;
+		it->attr.value_type = VALUE_ADDR;
+	}
 }
 void factor_id(item *it) {
 //	int offset = look_up(s->d[s->t].attr.value);
