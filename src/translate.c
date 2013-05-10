@@ -10,11 +10,14 @@ void d_array_list_list(item *it) {
 	int k = s->d[s->t - 2].attr.value;
 	it->attr.value = k;
 	array_init[k].data[array_init[k].i++] = s->d[s->t].attr.value;
+	s_t[cur_func].v[s_t[cur_func].last_v].array_size ++;
 }
 void d_array_list_item(item *it) {
 	int k = get_free_array_init();
 	it->attr.value = k;
 	array_init[k].data[array_init[k].i++] = s->d[s->t].attr.value;
+	s_t[cur_func].v[s_t[cur_func].last_v].array_size = 0;
+
 }
 void d_array_item_num(item *it) {
 	it->attr.value = s->d[s->t].attr.value;
@@ -71,7 +74,7 @@ void func_backpatch(int m) {
 		if (t->v[i].array == ARRAY && t->v[i].array_init != NO_INIT) {
 			addr = t->v[i].offset;
 			for (k = 0; k < array_init[t->v[i].array_init].i; k++) {
-				temp = sprintf(buffer + offset, "\tmovl $%d %d(%%ebp)\n",
+				temp = sprintf(buffer + offset, "\tmovl $%d, %d(%%ebp)\n",
 						array_init[t->v[i].array_init].data[k], addr);
 				addr -= 4;
 				offset += temp;
@@ -487,28 +490,53 @@ void factor_exp_item(item *it) {
 	it->attr.value_type = s->d[s->t - 1].attr.value_type;
 }
 void factor_array(item *it) {
-	// 取下标
-	int index;
-	switch (s->d[s->t - 1].attr.value_type) {
-	case VALUE_IMM:
-		index = s->d[s->t - 1].attr.value;
-		break;
-	default:
-		index = 0;
-		error_handle("unknown array index");
-		break;
-	}
-
 	// 查符號表
 	int o = look_up(&id_names[s->d[s->t - 3].attr.value], cur_func);
 	if (o == NOT_FOUND) { // 符号表没有找到
 		fatal_error = TRUE;
 		error_handle("Fatal Error : variable symbol not found!");
-	} else if (o >= MAGIC_NUM) { // 局部变量
-		it->attr.value = s_t[cur_func].v[o - MAGIC_NUM].offset
-				- (index % s_t[cur_func].v[o - MAGIC_NUM].array_size) * 4; // 与数组大小取模，防止越界
-		it->attr.value_type = VALUE_STACK_ADDR;
+		fatal_error = TRUE;
+		return;
+	}
+	// 取下标
+	int index = s->d[s->t - 1].attr.value;
+	// 下标存在%eax中
+	switch (s->d[s->t - 1].attr.value_type) {
+	case VALUE_IMM:
+		// 与数组大小取模，防止越界
+		if (index == -1)
+			index = s_t[cur_func].v[o - MAGIC_NUM].array_size;
+//		index %= s_t[cur_func].v[o - MAGIC_NUM].array_size;
+		sprintf(code.data[code.quad++], "movl $%d, %%eax\n", index);
+		break;
+	case VALUE_STACK_ADDR:
+		sprintf(code.data[code.quad++], "movl %d(%%ebp), %%eax\n", index);
+		break;
+	case VALUE_TEMP_ADDR:
+		// 临时变量的值应该还存放在%eax中
+		//sprintf(code.data[code.quad++], "movl $%d, %eax", index);
+		break;
+	default:
+		error_handle("unknown array index");
+		break;
+	}
+
+	if (o >= MAGIC_NUM) { // 局部变量
+		it->attr.value = new_temp();
+		// 计算下标对应的偏移
+		sprintf(code.data[code.quad++], "movl $%d, %%ebx\n", 4);
+		sprintf(code.data[code.quad++], "mull %%ebx\n");
+		sprintf(code.data[code.quad++], "negl %%eax\n");
+		sprintf(code.data[code.quad++], "addl $%d, %%eax\n",
+				s_t[cur_func].v[o - MAGIC_NUM].offset);
+		sprintf(code.data[code.quad++], "addl %%ebp, %%eax\n");
+		// 将偏移存入临时变量
+		sprintf(code.data[code.quad++], "movl $%d, %%edi\n", it->attr.value);
+		sprintf(code.data[code.quad++], "movl 0(%%eax), %%eax\n");
+		sprintf(code.data[code.quad++], "movl %%eax, temp(,%%edi,4)\n");
+		it->attr.value_type = VALUE_TEMP_ADDR;
 	} else { // 参数
+		// TODO
 		it->attr.value = s_t[cur_func].p[o].offset + 4;
 		it->attr.value_type = VALUE_ADDR;
 	}

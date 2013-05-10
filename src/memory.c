@@ -8,7 +8,8 @@
 
 // 生成新临时变量地址
 int new_temp(){
-	temp_addr += 4;
+	// TODO 临时变量分配
+	temp_addr ++;
 	return temp_addr;
 }
 // 在.bss段生成指定长度的数组
