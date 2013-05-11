@@ -2,12 +2,31 @@ void main (int x) {
 	int t;
 	int i;
 	int j;
+	int a;
+	int b;
 	int data [4] = { 1 , 4 , 2 , 3 } ;
-	i = 1;
-	while(i < 4){
-		b = data[i -1];
-		print_int(b);
+
+	i = 0;
+	while( i < 4){
+		t = data[i];
+		print_int(t);
 		i = i + 1;
 	};
+	
+	print_br();
+	
+	data[0] = 9;
+	data[1] = 8;
+	data[2] = 7;
+	
+	i = 0;
+	while( i < 4){
+		t = data[i];
+		print_int(t);
+		i = i + 1;
+	};
+	
+	
+	
 	exit();
 }

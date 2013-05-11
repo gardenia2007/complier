@@ -144,7 +144,7 @@ PRODUCTION production[] = {
 		{19,"exp->var=exp_item",3,exp_var_exp_item},
 		{19,"exp->var=call_func",3,null_f},
 		{19,"exp->call_func",1,null_f},
-		{36,"var->id[exp_item]",4,null_f},
+		{36,"var->id[exp_item]",4,var_array},
 		{36,"var->id",1,var_id},
 		{20,"exp_item->exp_item addop term",3,exp_item_addop},
 		{20,"exp_item->term",1,exp_item_term},

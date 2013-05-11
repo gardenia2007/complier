@@ -10,7 +10,7 @@ void d_array_list_list(item *it) {
 	int k = s->d[s->t - 2].attr.value;
 	it->attr.value = k;
 	array_init[k].data[array_init[k].i++] = s->d[s->t].attr.value;
-	s_t[cur_func].v[s_t[cur_func].last_v].array_size ++;
+	s_t[cur_func].v[s_t[cur_func].last_v].array_size++;
 }
 void d_array_list_item(item *it) {
 	int k = get_free_array_init();
@@ -357,24 +357,40 @@ void bool_exp_item(item *it) {
 }
 
 void exp_var_exp_item(item *it) {
+	char asm_stack[] = "#stack\n\tmovl %%eax, %d(%%ebp)\n";
+	// 從臨時變量中把偏移去出來
+	char asm_array[] = "#array\n\tmovl $%d, %%edi\n"
+			"\tmovl temp(,%%edi, 4), %%ebx\n"
+			"\tmovl %%eax, 0(%%ebx)\n";
+
+	char * _asm;
+	switch (s->d[s->t - 2].attr.value_type) {
+	case VALUE_STACK_ADDR:
+		_asm = asm_stack;
+		break;
+	case VALUE_ARRAY:
+		_asm = asm_array;
+		break;
+	default:
+		break;
+	}
 
 	switch (s->d[s->t].attr.value_type) {
 	case VALUE_TEMP_ADDR:
 		sprintf(code.data[code.quad++], "movl $%d, %%edi\n",
 				s->d[s->t].attr.value);
 		sprintf(code.data[code.quad++], "movl temp(,%%edi,4), %%eax\n");
-		sprintf(code.data[code.quad++], "movl %%eax, %d(%%ebp)\n",
-				s->d[s->t - 2].attr.value);
+		sprintf(code.data[code.quad++], _asm, s->d[s->t - 2].attr.value);
 		break;
 	case VALUE_STACK_ADDR:
 		sprintf(code.data[code.quad++], "movl %d(%%ebp), %%eax\n",
 				s->d[s->t].attr.value);
-		sprintf(code.data[code.quad++], "movl %%eax, %d(%%ebp)\n",
-				s->d[s->t - 2].attr.value);
+		sprintf(code.data[code.quad++], _asm, s->d[s->t - 2].attr.value);
 		break;
 	case VALUE_IMM:
-		sprintf(code.data[code.quad++], "movl $%d, %d(%%ebp)\n",
-				s->d[s->t].attr.value, s->d[s->t - 2].attr.value);
+		sprintf(code.data[code.quad++], "movl $%d, %%eax\n",
+				s->d[s->t].attr.value);
+		sprintf(code.data[code.quad++], _asm, s->d[s->t - 2].attr.value);
 		break;
 	case VALUE_NONE:
 		// 已经经过inc指令优化，不需要临时变量
@@ -385,6 +401,22 @@ void exp_var_exp_item(item *it) {
 }
 void var_id(item *it) {
 	factor_id(it);
+}
+void var_array(item *it) {
+	int o = array(it);
+	if (o < 0) {
+		return;
+	} else if (o >= MAGIC_NUM) { // 局部变量
+		it->attr.value = new_temp();
+		// 将数组值存入临时变量
+		sprintf(code.data[code.quad++], "movl $%d, %%edi\n", it->attr.value);
+		sprintf(code.data[code.quad++], "movl %%eax, temp(,%%edi,4)\n");
+		it->attr.value_type = VALUE_ARRAY;
+	} else { // 参数
+		// TODO
+		it->attr.value = s_t[cur_func].p[o].offset + 4;
+		it->attr.value_type = VALUE_ADDR;
+	}
 }
 
 void mulop_mul(item *i) {
@@ -489,14 +521,14 @@ void factor_exp_item(item *it) {
 	it->attr.value = s->d[s->t - 1].attr.value;
 	it->attr.value_type = s->d[s->t - 1].attr.value_type;
 }
-void factor_array(item *it) {
+int array(item *it) {
 	// 查符號表
 	int o = look_up(&id_names[s->d[s->t - 3].attr.value], cur_func);
 	if (o == NOT_FOUND) { // 符号表没有找到
 		fatal_error = TRUE;
 		error_handle("Fatal Error : variable symbol not found!");
 		fatal_error = TRUE;
-		return;
+		return -1;
 	}
 	// 取下标
 	int index = s->d[s->t - 1].attr.value;
@@ -521,16 +553,23 @@ void factor_array(item *it) {
 		break;
 	}
 
-	if (o >= MAGIC_NUM) { // 局部变量
+	// 下标存在%eax中，计算后偏移在%eax中
+	// 计算下标对应的偏移
+	sprintf(code.data[code.quad++], "movl $4, %%ebx\n");
+	sprintf(code.data[code.quad++], "mull %%ebx\n");
+	sprintf(code.data[code.quad++], "negl %%eax\n");
+	sprintf(code.data[code.quad++], "addl $%d, %%eax\n",
+			s_t[cur_func].v[o - MAGIC_NUM].offset);
+	sprintf(code.data[code.quad++], "addl %%ebp, %%eax\n");
+	return o;
+}
+void factor_array(item *it) {
+	int o = array(it);
+	if (o < 0) {
+		return;
+	} else if (o >= MAGIC_NUM) { // 局部变量
 		it->attr.value = new_temp();
-		// 计算下标对应的偏移
-		sprintf(code.data[code.quad++], "movl $%d, %%ebx\n", 4);
-		sprintf(code.data[code.quad++], "mull %%ebx\n");
-		sprintf(code.data[code.quad++], "negl %%eax\n");
-		sprintf(code.data[code.quad++], "addl $%d, %%eax\n",
-				s_t[cur_func].v[o - MAGIC_NUM].offset);
-		sprintf(code.data[code.quad++], "addl %%ebp, %%eax\n");
-		// 将偏移存入临时变量
+		// 将数组值存入临时变量
 		sprintf(code.data[code.quad++], "movl $%d, %%edi\n", it->attr.value);
 		sprintf(code.data[code.quad++], "movl 0(%%eax), %%eax\n");
 		sprintf(code.data[code.quad++], "movl %%eax, temp(,%%edi,4)\n");

@@ -84,6 +84,7 @@ void mulop_div(item *);
 void addop_plus(item *);
 void addop_minus(item *);
 void var_id(item *);
+void var_array(item *);
 void exp_var_exp_item(item *);
 
 

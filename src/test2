@@ -1,3 +1,37 @@
+# 冒泡排序
+void main (int x) {
+	int t;
+	int i;
+	int j;
+	int a;
+	int b;
+	int data [4] = { 1 , 4 , 2 , 3 } ;
+	i = 3;
+	while(i >= 0){
+		j = 0;
+		while(j < i){
+			a = data[j];
+			b = data[i];
+			if( a > b ){
+#				data[j] = b;
+				data[i] = a;
+#			}else{
+#				a = b;
+			};
+			j = j + 1;
+		};
+	};
+	
+#	i = 0;
+#	while( i < 4){
+#		t = data[i];
+#		print_int(t);
+#		i = i + 1;
+#	};
+	exit();
+}
+
+
 # 两数相加后打印结果
 void add_print(int w,int k){
 	w = w + k;

@@ -36,6 +36,7 @@ typedef int bool;
 #define VALUE_ADDR			3 // 内存中普通的变量
 #define VALUE_TEMP_ADDR		4 // 临时变量.bss
 #define VALUE_NONE			5 // inc优化时不需要临时变量
+#define VALUE_ARRAY			6 // 給數組賦值
 
 #define NO_LABEL	0
 #define LABEL		123
@@ -44,7 +45,7 @@ typedef int bool;
 
 
 #define MAX_ASM_LINE	1024
-#define MAX_CHAR_PER_ASM_LINE	64
+#define MAX_CHAR_PER_ASM_LINE	128
 
 typedef struct{
 	int lex;
