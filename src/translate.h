@@ -114,6 +114,9 @@ void while_smt(item *);
 void smt_list(item *);
 void smt_list_smt(item *);
 
+void loop_list(item *);
+//void loop_list_smt(item *);
+
 
 void smt_if_while(item *);
 void smt_while(item *);
@@ -150,6 +153,7 @@ void d_array_list_item(item *);
 void d_array_item_num(item *);
 void d_array_item_ch(item *);
 /*
+void (item *);
 void (item *);
 
 */

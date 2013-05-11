@@ -164,7 +164,7 @@ PRODUCTION production[] = {
 		{29,"smt->continue",1,null_f},
 		{29,"smt->while_smt",1,smt_if_while},
 		{29,"smt->if_smt",1,smt_if_while},
-		{31,"loop_list->loop_list semi M_quad smt",4,smt_list},
+		{31,"loop_list->loop_list semi M_quad smt",4,loop_list},
 		{31,"loop_list->smt",1,smt_list_smt},
 		{37,"while_smt->while(M_quad bool_exp){M_quad loop_list semi}",10,while_smt},
 		{34,"if_smt->if(bool_exp) { M_quad loop_list semi}M_if_smt else { M_quad loop_list semi }",16,if_smt_else},

@@ -235,6 +235,10 @@ void smt_list(item *it) {
 	back_patch(s->d[s->t - 2].attr.next_list, s->d[s->t - 1].attr.quad);
 	it->attr.next_list = s->d[s->t].attr.next_list;
 }
+void loop_list(item *it) {
+	back_patch(s->d[s->t - 3].attr.next_list, s->d[s->t - 1].attr.quad);
+	it->attr.next_list = s->d[s->t].attr.next_list;
+}
 void smt_list_smt(item *it) {
 	it->attr.next_list = s->d[s->t].attr.next_list;
 }
@@ -339,7 +343,6 @@ void bool_exp_relop(item *it) {
 	it->attr.true_list = make_list(code.quad);
 	sprintf(code.data[code.quad++], "j%s L_%%d\n",
 			relop[s->d[s->t - 1].attr.value - GT]);
-
 	it->attr.false_list = make_list(code.quad);
 	sprintf(code.data[code.quad++], "jmp L_%%d\n");
 }
