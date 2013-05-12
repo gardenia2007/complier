@@ -65,7 +65,7 @@ int main(void) {
 	for (k = 0; k < code.quad; k++) {
 		if (code.label[k] == LABEL) { // 输出label
 //			printf("L_%d:\n", k + 1);
-			fprintf(asm_fp, "L_%d:\n", k + 1);
+			fprintf(asm_fp, "\nL_%d:\n", k + 1);
 		}
 		if(code.more[k] != NULL){
 			fprintf(asm_fp, "%s", code.more[k]);

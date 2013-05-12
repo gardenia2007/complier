@@ -23,7 +23,7 @@ FUNC_print_int:
 
 	
 	cmp $0, %eax
-	jg	L_pos
+	jge	L_pos
 
 	pushl %eax
 

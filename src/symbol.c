@@ -31,8 +31,13 @@ typedef struct {
 	int ret_type;
 } lib_func_item;
 
-lib_func_item lib_func[] = { { "print_int", 1, 4, INT }, { "exit", 1, 4, VOID },
-		{ "print_br", 1, 4, VOID }, { "", -1, -1, -1 }, };
+lib_func_item lib_func[] = {
+		{ "print_int",	1,	4,	INT },
+		{ "exit",		1,	4,	VOID },
+		{ "print_br",	0,	0,	VOID },
+		{ "read_int",	0,	0,	INT },
+		{ "",			-1,	-1,	-1 },
+};
 
 void insert_lib_func() {
 	int i;

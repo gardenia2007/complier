@@ -66,8 +66,12 @@ list_item * merge(list_item *p, list_item *q){
 // 回填
 void back_patch(list_item *p, int i){
 	list_item * t;
+	char * fmt;
+	char buffer[MAX_CHAR_PER_ASM_LINE];
 	for(t = p; t != NULL; t = t->next){
-		sprintf(code.data[t->quad], code.data[t->quad], i);
+		fmt = code.data[t->quad];
+		sprintf(buffer, fmt, i);
+		strcpy(fmt, buffer);
 		code.label[i-1] = LABEL;
 		free(t); // 释放空间
 	}
