@@ -86,6 +86,7 @@ void addop_minus(item *);
 void var_id(item *);
 void var_array(item *);
 void exp_var_exp_item(item *);
+void exp_var_call_func(item *);
 
 
 void M_quad_E(item *);
@@ -152,6 +153,11 @@ void d_array_list_list(item *);
 void d_array_list_item(item *);
 void d_array_item_num(item *);
 void d_array_item_ch(item *);
+
+void ret_smt_id(item *);
+void ret_smt_num(item *);
+void ret_smt_void(item *);
+
 /*
 void (item *);
 void (item *);

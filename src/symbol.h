@@ -49,6 +49,7 @@ typedef struct{
 	variable_item p[VAR_MAX]; // 最多VAR_MAX个参数
 
 	int ret_type;
+	int has_ret;
 }func_item;
 
 typedef struct{

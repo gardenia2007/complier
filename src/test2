@@ -1,3 +1,54 @@
+int big(int a, int b){
+	int ta;
+	int tb;
+	int t;
+	if(ta > tb){
+		t = ta;
+	}else{
+		t = tb;
+	};
+	return t;
+}
+# 冒泡排序
+void main (int x) {
+	int t;
+	int i;
+	int j;
+	int a;
+	int b;
+	int data [9] = { 1 , 4 , 9, 2 , 5, 8, 7, 6, 3 } ;
+	
+	t = big(3, 9);
+	print_int(t);
+	print_br();
+	print_br();
+	
+	i = 8;
+	while(i >= 0){
+		j = 0;
+		while(j < i){
+			a = data[j];
+			b = data[i];
+			if( a > b ){
+				data[j] = b;
+				data[i] = a;
+			};
+			j = j + 1;
+		};
+		i = i - 1;
+	};
+	
+	i = 0;
+	while( i < 8){
+		t = data[i];
+		print_int(t);
+		i = i + 1;
+	};
+
+	exit();
+}
+
+
 # 冒泡排序
 void main (int x) {
 	int t;

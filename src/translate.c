@@ -87,18 +87,15 @@ void func_backpatch(int m) {
 // 没有参数的函数调用 结束
 void func(item *it) {
 	func_backpatch(5);
-	sprintf(code.data[code.quad++], "addl $%d, %%esp\n",
-			-(s_t[cur_func].v_offset + 4));
-	sprintf(code.data[code.quad++], "popl %%ebp\n");
-	sprintf(code.data[code.quad++], "ret\n");
+	if(s_t[cur_func].has_ret == FALSE)
+		ret_smt_void(it);
+
 }
 // 有参数的函数调用 结束
 void func_param(item *it) {
 	func_backpatch(6);
-	sprintf(code.data[code.quad++], "addl $%d, %%esp\n",
-			-(s_t[cur_func].v_offset + 4));
-	sprintf(code.data[code.quad++], "popl %%ebp\n");
-	sprintf(code.data[code.quad++], "ret\n");
+	if(s_t[cur_func].has_ret == FALSE)
+		ret_smt_void(it);
 }
 // 函数定义开始
 void M_func_start(item * it) {
@@ -402,6 +399,29 @@ void exp_var_exp_item(item *it) {
 		break;
 	}
 }
+
+void exp_var_call_func(item *it) {
+	char asm_stack[] = "#stack\n\tmovl %%eax, %d(%%ebp)\n";
+	// 從臨時變量中把偏移去出來
+	char asm_array[] = "#array\n\tmovl $%d, %%edi\n"
+			"\tmovl temp(,%%edi, 4), %%ebx\n"
+			"\tmovl %%eax, 0(%%ebx)\n";
+
+	char * _asm;
+	switch (s->d[s->t - 2].attr.value_type) {
+	case VALUE_STACK_ADDR:
+		_asm = asm_stack;
+		break;
+	case VALUE_ARRAY:
+		_asm = asm_array;
+		break;
+	default:
+		break;
+	}
+
+	sprintf(code.data[code.quad++], _asm, s->d[s->t - 2].attr.value);
+
+}
 void var_id(item *it) {
 	factor_id(it);
 }
@@ -601,6 +621,32 @@ void factor_num(item *it) {
 	it->attr.value_type = VALUE_IMM;
 }
 
+void ret_smt_id(item *it) {
+	int o = look_up(&id_names[s->d[s->t].attr.value], cur_func);
+	if (o == NOT_FOUND) { // 符号表没有找到
+		fatal_error = TRUE;
+		error_handle("Fatal Error : variable symbol not found!");
+	} else if (o >= MAGIC_NUM) { // 局部变量
+		sprintf(code.data[code.quad++], "movl %d(%%ebp), %%eax\n",
+				s_t[cur_func].v[o - MAGIC_NUM].offset);
+	} else { // 参数
+		sprintf(code.data[code.quad++], "movl %d(%%ebp), %%eax\n",
+				s_t[cur_func].p[o].offset);
+	}
+	ret_smt_void(it);
+}
+void ret_smt_num(item *it) {
+	sprintf(code.data[code.quad++], "movl $%d, %%eax\n",
+			s->d[s->t].attr.value);
+	ret_smt_void(it);
+}
+void ret_smt_void(item *it) {
+	s_t[cur_func].has_ret = TRUE;
+	sprintf(code.data[code.quad++], "addl $%d, %%esp\n",
+			-(s_t[cur_func].v_offset + 4));
+	sprintf(code.data[code.quad++], "popl %%ebp\n");
+	sprintf(code.data[code.quad++], "ret\n");
+}
 void type_int(item * it) {
 	it->attr.type = INT;
 	it->attr.width = 4;

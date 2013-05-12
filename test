@@ -1,32 +1,22 @@
-# 冒泡排序
+int big(int a, int b){
+	int t;
+	if(a > b){
+		return a;
+	}else{
+		return b;
+	};
+	return;
+}
+
 void main (int x) {
 	int t;
-	int i;
-	int j;
-	int a;
-	int b;
-	int data [9] = { 1 , 4 , 9, 2 , 5, 8, 7, 6, 3 } ;
-	i = 8;
-	while(i >= 0){
-		j = 0;
-		while(j < i){
-			a = data[j];
-			b = data[i];
-			if( a > b ){
-				data[j] = b;
-				data[i] = a;
-			};
-			j = j + 1;
-		};
-		i = i - 1;
-	};
-	
-	i = 0;
-	while( i < 8){
-		t = data[i];
-		print_int(t);
-		i = i + 1;
-	};
+	int b[3] = {1, 9, 8};
 
+	b[8] = big(3, 7);
+	t = b[1];
+	print_int(t);
+	print_br();
+	
 	exit();
 }
+

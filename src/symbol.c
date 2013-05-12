@@ -72,6 +72,7 @@ int new_func_item() {
 	s_t[cur_func].last_p = 0;
 	s_t[cur_func].p_offset = 8;
 	s_t[cur_func].ret_type = 0;
+	s_t[cur_func].has_ret = FALSE;
 	s_t[cur_func].name = "\0";
 
 }
